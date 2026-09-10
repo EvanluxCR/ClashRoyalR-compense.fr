@@ -14,7 +14,7 @@ async function loadLeaderboard() {
 
   const mode = modeSelect.value;
   const requestedLimit = Number(limitSelect.value) || 200;
-  const region = mode === "trophies" ? "global" : regionSelect.value;
+  const region = regionSelect.value;
 
   try {
     const url = `${API_BASE}/leaderboard?country=${encodeURIComponent(region)}&mode=${encodeURIComponent(mode)}&limit=${requestedLimit}`;
@@ -31,7 +31,7 @@ async function loadLeaderboard() {
     table.style.display = "table";
     stateEl.className = "state-msg state-msg--success";
 
-    const modeName = mode === "pathoflegend" ? "Ranked / Path of Legend" : "Trophy Road mondial";
+    const modeName = mode === "pathoflegend" ? "Ranked / Path of Legend" : "Trophy Road";
     const exhaustedText = data?.exhausted && items.length < requestedLimit
       ? ` L’API ne renvoie actuellement que ${items.length} joueur${items.length > 1 ? "s" : ""} pour ce classement.`
       : "";
@@ -69,12 +69,10 @@ function renderTrophyLeaderboard(items) {
 }
 
 function syncModeControls() {
-  const trophyMode = modeSelect.value === "trophies";
-  regionSelect.disabled = trophyMode;
-  if (trophyMode) regionSelect.value = "global";
-  regionSelect.title = trophyMode
-    ? "Le nouvel endpoint Trophy Road est un leaderboard mondial."
-    : "Choisis une région pour Ranked / Path of Legend.";
+  regionSelect.disabled = false;
+  regionSelect.title = modeSelect.value === "trophies"
+    ? "Choisis la région du classement Trophy Road."
+    : "Choisis la région du classement Ranked / Path of Legend.";
 }
 
 regionSelect.addEventListener("change", loadLeaderboard);

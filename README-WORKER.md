@@ -17,7 +17,7 @@ La clé ne doit jamais être mise dans GitHub.
 - `/player/TAG/upcomingchests` : coffres à venir
 - `/cards` : catalogue des cartes
 - `/leaderboard?country=global&mode=pathoflegend&limit=50` : Ranked / Path of Legend actuel
-- `/leaderboard?country=global&mode=trophies&limit=50` : ancien classement Trophy Road
+- `/leaderboard?country=global&mode=trophies&limit=50` : classement Trophy Road
 
 ## Correction importante du leaderboard
 Ne pas utiliser `/locations/global/rankings/players` pour afficher Ranked / Path of Legend.
@@ -50,4 +50,4 @@ Un profil complet peut faire plusieurs appels API en parallèle. Évite de relan
 - Ranked / Path of Legend : `/leaderboard?country=global&mode=pathoflegend&limit=200`
 - Trophy Road : `/leaderboard?country=global&mode=trophies&limit=200`
 - Le Worker peut agréger automatiquement plusieurs pages, jusqu’à 500 joueurs.
-- Trophy Road utilise `/leaderboards` puis `/leaderboard/{id}` afin de retrouver dynamiquement le leaderboard actuel au lieu de coder un ID en dur.
+- Trophy Road utilise `/locations/{locationId}/rankings/players`. Ranked / Path of Legend reste séparé via `/locations/{locationId}/pathoflegend/players`.
