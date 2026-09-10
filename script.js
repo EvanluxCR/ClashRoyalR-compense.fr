@@ -12,6 +12,9 @@
   link: "https://ton-vrai-lien.com"
 */
 
+/* Change cette date à chaque fois que tu mets à jour les récompenses. */
+const LAST_UPDATED = "10/09/2026";
+
 const rewards = [
  
   {
@@ -96,13 +99,6 @@ const rewards = [
     description: "2 bannières à récupérer",
     link: "https://supr.cl/4cZS8tA?r=qr",
     label: "Obtenir la récompense"
-  },
- 
-  {
-    title: "#",
-    description: "#",
-    link: "#",
-    label: "Obtenir la récompense"
   }
  
 ];
@@ -116,11 +112,15 @@ const socials = {
 
 const grid = document.querySelector("#reward-grid");
 
+const lastUpdatedEl = document.querySelector("#last-updated");
+if (lastUpdatedEl) lastUpdatedEl.textContent = `Mise à jour le ${LAST_UPDATED}`;
+
 rewards.forEach((reward, index) => {
+  const type = detectType(reward.title);
   const card = document.createElement("article");
   card.className = "reward-card";
   card.innerHTML = `
-    <div class="reward-tag">CLASH ROYALE • ${String(index + 1).padStart(2, "0")}</div>
+    <div class="reward-tag reward-tag--${type}">${typeLabel(type)}</div>
     <h3>${escapeHtml(reward.title)}</h3>
     <p>${escapeHtml(reward.description)}</p>
     <div class="qr-wrap">
@@ -130,9 +130,9 @@ rewards.forEach((reward, index) => {
       <a class="btn btn--primary" href="${safeUrl(reward.link)}" target="_blank" rel="noopener">
         🎁 ${escapeHtml(reward.label)}
       </a>
-      <a class="btn btn--secondary" href="${safeUrl(reward.link)}" target="_blank" rel="noopener">
-        🔗 Ouvrir le lien
-      </a>
+      <button type="button" class="btn btn--secondary" data-copy="${escapeHtml(reward.link)}">
+        📋 Copier le lien
+      </button>
     </div>
   `;
   grid.appendChild(card);
@@ -142,6 +142,24 @@ rewards.forEach((reward, index) => {
     value: reward.link,
     size: 140,
     level: "H"
+  });
+});
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const link = button.dataset.copy;
+    try {
+      await navigator.clipboard.writeText(link);
+      const original = button.textContent;
+      button.textContent = "✅ Copié !";
+      button.disabled = true;
+      setTimeout(() => {
+        button.textContent = original;
+        button.disabled = false;
+      }, 1500);
+    } catch {
+      window.prompt("Copie le lien manuellement :", link);
+    }
   });
 });
 
@@ -162,6 +180,26 @@ function safeUrl(url) {
     if (parsed.protocol === "https:" || parsed.protocol === "http:") return parsed.href;
   } catch {}
   return "#";
+}
+
+function detectType(title) {
+  const t = String(title).toLowerCase();
+  if (/\bor\b/.test(t)) return "or";
+  if (t.includes("emote")) return "emote";
+  if (t.includes("bannière") || t.includes("banniere")) return "banniere";
+  if (t.includes("skin")) return "skin";
+  return "autre";
+}
+
+function typeLabel(type) {
+  const labels = {
+    or: "🪙 OR",
+    emote: "😀 EMOTE",
+    banniere: "🚩 BANNIÈRE",
+    skin: "🎨 SKIN",
+    autre: "🎁 RÉCOMPENSE"
+  };
+  return labels[type] || labels.autre;
 }
 
 function escapeHtml(value) {
