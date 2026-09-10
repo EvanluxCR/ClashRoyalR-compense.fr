@@ -1,80 +1,45 @@
-# Déployer le proxy (Worker) — étape par étape
+# Worker Cloudflare — version tracker complet + Ranked
 
-Le tracker et le leaderboard ont besoin d'un petit serveur qui cache ta clé API
-et transmet les requêtes à Clash Royale. GitHub Pages ne peut pas faire ça seul
-(c'est un hébergement de fichiers statiques, sans serveur). On utilise donc un
-**Cloudflare Worker**, gratuit et simple à mettre en place.
+Ce Worker garde `CR_API_KEY` côté Cloudflare et expose uniquement des routes sûres au site GitHub Pages.
 
-## 1. Créer une clé API Clash Royale
+## Secret obligatoire
+Dans Cloudflare > Worker > Settings > Variables and Secrets :
+- nom : `CR_API_KEY`
+- valeur : ta clé officielle Clash Royale
+- type : Secret / Encrypt
 
-1. Va sur https://developer.clashroyale.com et connecte-toi (ou crée un compte).
-2. Clique sur **My Account > New Key**.
-3. Donne un nom (ex: "site-evanlux").
-4. Dans **Allowed IP addresses**, ajoute cette IP fixe :
-   ```
-   45.79.218.79
-   ```
-   (c'est l'IP du proxy RoyaleAPI, qui nous permet de contourner le fait que
-   Cloudflare n'a pas d'IP fixe).
-5. Sauvegarde et **copie la clé générée** (une longue chaîne de caractères).
+La clé ne doit jamais être mise dans GitHub.
 
-## 2. Créer le Worker Cloudflare
+## Routes du Worker
+- `/player/TAG` : profil simple (ancienne compatibilité)
+- `/player/TAG/full` : profil + battle log + coffres + catalogue de cartes
+- `/player/TAG/battlelog` : 25 combats récents renvoyés par l'API
+- `/player/TAG/upcomingchests` : coffres à venir
+- `/cards` : catalogue des cartes
+- `/leaderboard?country=global&mode=pathoflegend&limit=50` : Ranked / Path of Legend actuel
+- `/leaderboard?country=global&mode=trophies&limit=50` : ancien classement Trophy Road
 
-1. Va sur https://dash.cloudflare.com et crée un compte gratuit si besoin.
-2. Dans le menu, va dans **Workers & Pages > Create > Create Worker**.
-3. Donne-lui un nom (ex: `cr-api-proxy`) et clique sur **Deploy**.
-4. Une fois créé, clique sur **Edit code**.
-5. Supprime tout le code par défaut et colle le contenu du fichier
-   `worker/index.js` fourni avec ce site.
-6. Modifie la ligne suivante avec l'URL exacte de ton site GitHub Pages :
-   ```js
-   const ALLOWED_ORIGIN = "https://TON-PSEUDO-GITHUB.github.io";
-   ```
-7. Clique sur **Deploy** pour sauvegarder.
+## Correction importante du leaderboard
+Ne pas utiliser `/locations/global/rankings/players` pour afficher Ranked / Path of Legend.
+Le Worker utilise désormais :
 
-## 3. Ajouter ta clé API comme secret
-
-1. Toujours sur la page de ton Worker, va dans **Settings > Variables and Secrets**.
-2. Clique sur **Add variable**.
-3. Nom de la variable : `CR_API_KEY`
-4. Valeur : colle la clé API copiée à l'étape 1.
-5. Coche bien l'option **Encrypt** (ou "Secret") pour que la clé reste cachée.
-6. Sauvegarde.
-
-## 4. Récupérer l'URL du Worker
-
-En haut de la page de ton Worker, tu verras une URL du type :
-```
-https://cr-api-proxy.tonpseudo.workers.dev
-```
-Copie-la.
-
-## 5. Connecter le site au Worker
-
-Ouvre le fichier `config.js` à la racine du site et remplace la valeur par
-l'URL copiée à l'étape précédente :
-
-```js
-const API_BASE = "https://cr-api-proxy.tonpseudo.workers.dev";
+```text
+/v1/locations/<location>/pathoflegend/players
 ```
 
-## 6. Mettre en ligne
+La réponse Ranked utilise notamment `rank`, `eloRating` et `leagueNumber`.
 
-Pousse (push) tous les fichiers du site (y compris `config.js` modifié) sur
-ton dépôt GitHub. GitHub Pages se mettra à jour automatiquement.
+## Déploiement
+1. Copie `worker/index.js` dans le Worker Cloudflare.
+2. Vérifie que `ALLOWED_ORIGINS` contient bien `https://evanluxcr.github.io`.
+3. Ajoute le secret `CR_API_KEY`.
+4. Deploy.
+5. Dans `config.js`, garde l'URL de ton Worker.
 
-## Test rapide
-
-Une fois tout configuré, ouvre dans ton navigateur :
+## Tests rapides
+```text
+https://TON-WORKER.workers.dev/player/2PP/full
+https://TON-WORKER.workers.dev/leaderboard?country=global&mode=pathoflegend
 ```
-https://TON-WORKER.workers.dev/player/TONTAG
-```
-(remplace `TONTAG` par un vrai tag de joueur, sans le `#`). Tu dois voir du
-JSON avec les infos du joueur. Si c'est le cas, le tracker et le leaderboard
-du site fonctionneront.
 
-## Pourquoi la "TV Royale" n'est pas possible
-
-La TV Royale (spectate en direct) n'est pas exposée par l'API officielle de
-Supercell — c'est une fonctionnalité interne au jeu. Aucun site tiers ne peut
-y accéder, il n'y a donc rien à développer de ce côté.
+Un profil complet peut faire plusieurs appels API en parallèle. Évite de relancer la recherche en boucle pour ne pas gaspiller le quota API.

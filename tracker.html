@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Recherche un compte Clash Royale par tag et affiche ses statistiques.">
-  <title>EvANLUX • Tracker de compte</title>
+  <meta name="description" content="Tracker Clash Royale complet : profil, Ranked, decks récents, cartes, évolutions, badges et coffres.">
+  <title>EvANLUX • Tracker complet</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,40 +21,101 @@
 
   <main>
     <section class="section">
-      <div class="section__eyebrow">🔍 TRACKER DE COMPTE</div>
-      <h2>Retrouve les stats d'un joueur.</h2>
-      <p class="lead">Entre un tag de joueur (avec ou sans le #), par exemple <strong>#2PP</strong>.</p>
+      <div class="section__eyebrow">🔍 TRACKER DE COMPTE COMPLET</div>
+      <h2>Tout ce que l’API publique sait sur un joueur.</h2>
+      <p class="lead">Profil, Ranked / Path of Legend, collection, niveaux, évolutions, deck actuel, decks des combats récents, badges, succès et coffres à venir.</p>
 
       <form id="tracker-form" class="search-box">
-        <input type="text" id="tag-input" placeholder="#TAG du joueur" autocomplete="off">
+        <input type="text" id="tag-input" placeholder="#TAG du joueur" autocomplete="off" spellcheck="false">
         <button type="submit" class="btn btn--primary">🔍 Rechercher</button>
       </form>
 
       <div id="state" class="state-msg"></div>
 
-      <article id="profile-card" class="profile-card">
+      <article id="profile-card" class="profile-card profile-card--wide">
         <div class="profile-head">
           <div>
             <h2 id="p-name">—</h2>
             <div class="tag" id="p-tag">—</div>
           </div>
+          <div class="profile-head__meta" id="p-clan"></div>
         </div>
+
         <div class="stat-grid" id="p-stats"></div>
 
-        <div class="profile-subsection" id="p-favcard-section">
+        <section class="profile-subsection">
+          <h3 class="profile-subtitle">🏅 Ranked / Path of Legend</h3>
+          <div class="stat-grid" id="p-pol"></div>
+        </section>
+
+        <section class="profile-subsection" id="p-progress-section">
+          <h3 class="profile-subtitle">🛣️ Progression des modes</h3>
+          <div class="progress-grid" id="p-progress"></div>
+        </section>
+
+        <section class="profile-subsection" id="p-favcard-section">
           <h3 class="profile-subtitle">⭐ Carte favorite</h3>
           <div class="fav-card" id="p-favcard"></div>
-        </div>
+        </section>
 
-        <div class="profile-subsection" id="p-deck-section">
+        <section class="profile-subsection" id="p-deck-section">
           <h3 class="profile-subtitle">🃏 Deck actuel</h3>
           <div class="deck-grid" id="p-deck"></div>
-        </div>
+          <div id="p-support-deck-wrap" class="sub-block">
+            <h4>🏰 Troupe de tour / Support du deck</h4>
+            <div class="deck-grid" id="p-support-deck"></div>
+          </div>
+        </section>
+
+        <section class="profile-subsection" id="p-battles-section">
+          <div class="section-row">
+            <h3 class="profile-subtitle">⚔️ 25 combats récents & decks joués</h3>
+            <span class="mini-note" id="p-battle-summary"></span>
+          </div>
+          <div class="battle-list" id="p-battles"></div>
+        </section>
+
+        <section class="profile-subsection" id="p-chests-section">
+          <h3 class="profile-subtitle">📦 Coffres à venir</h3>
+          <div class="chest-list" id="p-chests"></div>
+        </section>
+
+        <section class="profile-subsection" id="p-cards-section">
+          <div class="section-row section-row--wrap">
+            <div>
+              <h3 class="profile-subtitle">🗂️ Collection complète de cartes</h3>
+              <div class="mini-note" id="p-card-summary"></div>
+            </div>
+            <input class="collection-search" id="card-filter" type="search" placeholder="Filtrer une carte...">
+          </div>
+          <div class="collection-grid" id="p-cards"></div>
+        </section>
+
+        <section class="profile-subsection" id="p-support-cards-section">
+          <h3 class="profile-subtitle">🏰 Cartes de support / troupes de tour</h3>
+          <div class="collection-grid" id="p-support-cards"></div>
+        </section>
+
+        <section class="profile-subsection" id="p-badges-section">
+          <h3 class="profile-subtitle">🎖️ Badges</h3>
+          <div class="detail-grid" id="p-badges"></div>
+        </section>
+
+        <section class="profile-subsection" id="p-achievements-section">
+          <h3 class="profile-subtitle">🏆 Succès / achievements</h3>
+          <div class="detail-grid" id="p-achievements"></div>
+        </section>
+
+        <section class="profile-subsection">
+          <details class="raw-details">
+            <summary>🧪 Données API brutes (pour voir absolument tous les champs)</summary>
+            <pre id="p-raw"></pre>
+          </details>
+        </section>
       </article>
 
       <div class="setup-note">
-        ⚠️ Cette page a besoin d'un petit serveur relais (Worker) pour fonctionner —
-        voir le fichier <code>worker/README-WORKER.md</code> fourni avec le site pour le configurer.
+        Le site passe par le Worker Cloudflare afin de garder la clé API secrète. Le tracker utilise maintenant <code>/player/TAG/full</code>.
       </div>
     </section>
   </main>
