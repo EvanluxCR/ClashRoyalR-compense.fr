@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Classement mondial des meilleurs joueurs Clash Royale.">
+  <title>EvANLUX • Leaderboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="topnav">
+    <div class="topnav__brand">⚡ EVAN<span>LUX</span></div>
+    <div class="topnav__links">
+      <a href="index.html">Accueil</a>
+      <a href="recompenses.html">Récompenses</a>
+      <a href="deck-meta.html">Deck Meta</a>
+      <a href="tracker.html">Tracker</a>
+      <a href="leaderboard.html" class="active">Leaderboard</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="section">
+      <div class="section__eyebrow">🏆 LEADERBOARD</div>
+      <h2>Le classement des meilleurs joueurs.</h2>
+      <p class="lead">Classement mondial, actualisé à chaque chargement de la page.</p>
+
+      <div class="leaderboard-controls">
+        <label for="region-select" style="color:var(--muted);font-size:.85rem;font-weight:800">Région :</label>
+        <select id="region-select">
+          <option value="global">🌍 Mondial</option>
+          <option value="57000006">🇫🇷 France</option>
+          <option value="57000094">🇧🇪 Belgique</option>
+          <option value="57000167">🇨🇭 Suisse</option>
+          <option value="57000024">🇨🇦 Canada</option>
+        </select>
+        <button id="refresh-btn" class="btn btn--secondary">🔄 Actualiser</button>
+      </div>
+
+      <div id="state" class="state-msg">Chargement du classement...</div>
+
+      <table class="leaderboard-table" id="leaderboard-table" style="display:none">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Joueur</th>
+            <th>Clan</th>
+            <th>Trophées</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+
+      <div class="setup-note">
+        ⚠️ Cette page a besoin d'un petit serveur relais (Worker) pour fonctionner —
+        voir le fichier <code>worker/README-WORKER.md</code> fourni avec le site pour le configurer.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>⚡ EVANLUX • Contenu Clash Royale non officiel, non affilié à Supercell.</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="leaderboard.js"></script>
+</body>
+</html>

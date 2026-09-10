@@ -3,101 +3,82 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Récompenses Clash Royale — liens et QR codes mis à jour régulièrement.">
-  <title>EvANLUX • Récompenses Clash Royale</title>
+  <meta name="description" content="EvANLUX Clash Royale — récompenses, decks meta, tracker de compte et leaderboard.">
+  <title>EvANLUX • Clash Royale Hub</title>
 
-  <meta property="og:title" content="EvANLUX • Récompenses Clash Royale">
-  <meta property="og:description" content="Récupère les dernières récompenses Clash Royale d'EvANLUX en un clic ou en scannant un QR code.">
+  <meta property="og:title" content="EvANLUX • Clash Royale Hub">
+  <meta property="og:description" content="Récompenses, decks meta, tracker de compte et leaderboard Clash Royale.">
   <meta property="og:image" content="assets/banniere.jpeg">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="EvANLUX • Récompenses Clash Royale">
-  <meta name="twitter:description" content="Récupère les dernières récompenses Clash Royale d'EvANLUX en un clic ou en scannant un QR code.">
+  <meta name="twitter:title" content="EvANLUX • Clash Royale Hub">
   <meta name="twitter:image" content="assets/banniere.jpeg">
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <nav class="topnav">
+    <div class="topnav__brand">⚡ EVAN<span>LUX</span></div>
+    <div class="topnav__links">
+      <a href="index.html" class="active">Accueil</a>
+      <a href="recompenses.html">Récompenses</a>
+      <a href="deck-meta.html">Deck Meta</a>
+      <a href="tracker.html">Tracker</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </div>
+  </nav>
+
   <header class="hero" id="accueil">
     <div class="hero__image" aria-hidden="true"></div>
     <div class="hero__overlay"></div>
     <div class="hero__content">
       <div class="pill">⚡ EVANLUX • CLASH ROYALE</div>
-      <h1>Récompenses<br><span>Clash Royale</span></h1>
-      <p>Retrouve ici les récompenses disponibles, avec leur lien direct et leur QR code.</p>
-      <a class="btn btn--primary" href="#recompenses">🎁 Voir les récompenses</a>
+      <h1>Le Hub<br><span>Clash Royale</span></h1>
+      <p>Récompenses, decks meta, stats de compte et classements — tout est ici.</p>
+      <a class="btn btn--primary" href="#menu">Explorer</a>
     </div>
   </header>
 
   <main>
-    <section class="intro section">
-      <div class="section__eyebrow">COMMENT ÇA MARCHE ?</div>
-      <h2>Récupère ta récompense en quelques secondes.</h2>
-      <p class="lead">
-        Pour chaque récompense, tu peux soit <strong>cliquer sur le bouton</strong>,
-        soit <strong>scanner le QR code</strong>. Le lien ouvre la page correspondante
-        pour récupérer la récompense dans Clash Royale.
-      </p>
+    <section class="section" id="menu">
+      <div class="section__eyebrow">CHOISIS UNE RUBRIQUE</div>
+      <h2>Qu'est-ce que tu cherches ?</h2>
 
-      <div class="steps">
-        <article class="step">
-          <span>01</span>
-          <div>
-            <h3>Choisis une récompense</h3>
-            <p>Regarde les cartes disponibles ci-dessous.</p>
-          </div>
+      <div class="menu-grid">
+        <article class="menu-card">
+          <div class="menu-card__icon">🎁</div>
+          <h3>Récompenses Clash Royale</h3>
+          <p>Récupère les dernières récompenses disponibles, avec lien direct ou QR code.</p>
+          <a class="btn btn--primary" href="recompenses.html">Voir les récompenses</a>
         </article>
-        <article class="step">
-          <span>02</span>
-          <div>
-            <h3>Clique ou scanne</h3>
-            <p>Utilise le bouton ou le QR code de la carte.</p>
-          </div>
+
+        <article class="menu-card menu-card--soon">
+          <div class="badge-soon">BIENTÔT</div>
+          <div class="menu-card__icon">🃏</div>
+          <h3>Deck Meta</h3>
+          <p>Les meilleurs decks du moment, classés par archétype et par arène. Page en préparation.</p>
+          <a class="btn" href="deck-meta.html">Aperçu</a>
         </article>
-        <article class="step">
-          <span>03</span>
-          <div>
-            <h3>Récupère-la</h3>
-            <p>Le lien te guide vers la récompense à récupérer.</p>
-          </div>
+
+        <article class="menu-card">
+          <div class="menu-card__icon">🔍</div>
+          <h3>Tracker de compte</h3>
+          <p>Entre ton tag de joueur et retrouve tes trophées, ton niveau, ton clan et bien plus.</p>
+          <a class="btn btn--primary" href="tracker.html">Chercher un compte</a>
         </article>
-      </div>
-    </section>
 
-    <section class="rewards section" id="recompenses">
-      <div class="section-heading">
-        <div>
-          <div class="section__eyebrow">🎁 RÉCOMPENSES</div>
-          <h2>Les récompenses du moment</h2>
-        </div>
-        <div class="live-badge"><i></i> <span id="last-updated">Mise à jour régulière</span></div>
-      </div>
-
-      <div id="reward-grid" class="reward-grid"></div>
-    </section>
-
-    <section class="creator section">
-      <div class="creator-card">
-        <div>
-          <div class="section__eyebrow">RETROUVE EVANLUX</div>
-          <h2>Du fun, du skill et des victoires.</h2>
-          <p>Retrouve mes lives et mes contenus sur mes réseaux.</p>
-        </div>
-        <div class="socials">
-          <a href="#" class="social social--twitch" data-social="twitch">Twitch</a>
-          <a href="#" class="social social--tiktok" data-social="tiktok">TikTok</a>
-          <a href="#" class="social social--instagram" data-social="instagram">Instagram</a>
-        </div>
+        <article class="menu-card">
+          <div class="menu-card__icon">🏆</div>
+          <h3>Leaderboard</h3>
+          <p>Le classement mondial (ou par pays) des meilleurs joueurs, mis à jour régulièrement.</p>
+          <a class="btn btn--primary" href="leaderboard.html">Voir le classement</a>
+        </article>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>⚡ EVANLUX • Les récompenses peuvent changer régulièrement.</p>
-    <p>Reviens souvent pour ne pas manquer les nouvelles récompenses.</p>
+    <p>⚡ EVANLUX • Contenu Clash Royale non officiel, non affilié à Supercell.</p>
   </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>

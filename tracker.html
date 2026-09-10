@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Recherche un compte Clash Royale par tag et affiche ses statistiques.">
+  <title>EvANLUX • Tracker de compte</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="topnav">
+    <div class="topnav__brand">⚡ EVAN<span>LUX</span></div>
+    <div class="topnav__links">
+      <a href="index.html">Accueil</a>
+      <a href="recompenses.html">Récompenses</a>
+      <a href="deck-meta.html">Deck Meta</a>
+      <a href="tracker.html" class="active">Tracker</a>
+      <a href="leaderboard.html">Leaderboard</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="section">
+      <div class="section__eyebrow">🔍 TRACKER DE COMPTE</div>
+      <h2>Retrouve les stats d'un joueur.</h2>
+      <p class="lead">Entre un tag de joueur (avec ou sans le #), par exemple <strong>#2PP</strong>.</p>
+
+      <form id="tracker-form" class="search-box">
+        <input type="text" id="tag-input" placeholder="#TAG du joueur" autocomplete="off">
+        <button type="submit" class="btn btn--primary">🔍 Rechercher</button>
+      </form>
+
+      <div id="state" class="state-msg"></div>
+
+      <article id="profile-card" class="profile-card">
+        <div class="profile-head">
+          <div>
+            <h2 id="p-name">—</h2>
+            <div class="tag" id="p-tag">—</div>
+          </div>
+        </div>
+        <div class="stat-grid" id="p-stats"></div>
+      </article>
+
+      <div class="setup-note">
+        ⚠️ Cette page a besoin d'un petit serveur relais (Worker) pour fonctionner —
+        voir le fichier <code>worker/README-WORKER.md</code> fourni avec le site pour le configurer.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>⚡ EVANLUX • Contenu Clash Royale non officiel, non affilié à Supercell.</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="tracker.js"></script>
+</body>
+</html>
