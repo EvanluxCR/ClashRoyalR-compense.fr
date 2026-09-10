@@ -14,48 +14,48 @@
 
 const rewards = [
   {
-    title: "Récompense #1",
-    description: "Remplace ce texte par le nom et la description de ta récompense.",
-    link: "https://example.com/recompense-1",
+    title: "Bannière x2",
+    description: "2 bannières à récupérer",
+    link: "https://link.clashroyale.com/en/?action=voucher&code=819f7582-9242-444a-a6bf-9ea3efa913e3",
     label: "Obtenir la récompense"
   },
   {
-    title: "Récompense #2",
-    description: "Ajoute ici une autre récompense Clash Royale.",
-    link: "https://example.com/recompense-2",
+    title: "Emote x1",
+    description: "1 Emote à récupérer sur le site de supercell en vous connectant à votre compte",
+    link: "https://on.royaleapi.com/s84prsnore",
     label: "Obtenir la récompense"
   },
   {
-    title: "Récompense #3",
-    description: "Le QR code est généré automatiquement à partir du lien.",
-    link: "https://example.com/recompense-3",
+    title: "Emote x1",
+    description: "1 Emote à récupérer",
+    link: "https://link.clashroyale.com/en/?action=voucher&code=6884f0e3-367c-4449-93ef-fb4e17ac55a1",
     label: "Obtenir la récompense"
   },
   {
-    title: "Récompense #4",
-    description: "Tu peux avoir autant de cartes que tu veux.",
-    link: "https://example.com/recompense-4",
+    title: "Or x1000",
+    description: "1000 Or a récupérer",
+    link: "https://link.clashroyale.com/en/?action=voucher&code=2c13ee10-68de-4cc6-940e-57cfb9aebb0c",
     label: "Obtenir la récompense"
   },
   {
-    title: "Récompense #5",
-    description: "Pense à remplacer le lien avant de publier la récompense.",
-    link: "https://example.com/recompense-5",
+    title: "Bannière x1",
+    description: "1 bannières à récupérer",
+    link: "https://link.clashroyale.com/en/?action=voucher&code=80486871-5620-4237-83fb-42174ddc8a83",
     label: "Obtenir la récompense"
   },
   {
-    title: "Récompense #6",
-    description: "Reviens régulièrement pour ajouter les nouvelles récompenses.",
-    link: "https://example.com/recompense-6",
+    title: "Emote x1",
+    description: "1 Emote à récupérer sur le site de supercell en vous connectant à votre compte",
+    link: "https://link.clashroyale.com/de/?action=voucher&code=bf578c2b-bc44-4312-8c61-5e513b6fb817",
     label: "Obtenir la récompense"
   }
 ];
 
 /* Mets ici tes vrais réseaux quand tu les as. */
 const socials = {
-  twitch: "#",
-  tiktok: "#",
-  instagram: "#"
+  twitch: "https://www.twitch.tv/evanlux",
+  tiktok: "https://www.tiktok.com/@evanluxcr",
+  instagram: "https://www.instagram.com/evanluxcr"
 };
 
 const grid = document.querySelector("#reward-grid");
