@@ -21,7 +21,7 @@ const rewards = [
   },
   {
     title: "Emote x1",
-    description: "1 Emote à récupérer sur le site de supercell en vous connectant à votre compte",
+    description: "1 Emote à récupérer",
     link: "https://on.royaleapi.com/s84prsnore",
     label: "Obtenir la récompense"
   },
@@ -45,11 +45,53 @@ const rewards = [
   },
   {
     title: "Emote x1",
-    description: "1 Emote à récupérer sur le site de supercell en vous connectant à votre compte",
+    description: "1 Emote à récupérer",
     link: "https://link.clashroyale.com/de/?action=voucher&code=bf578c2b-bc44-4312-8c61-5e513b6fb817",
     label: "Obtenir la récompense"
-  }
-];
+   },
+  {
+    title: "Bannière x2",
+    description: "2 bannières à récupérer",
+    link: "https://bit.ly/4yChG9p?r=qr",
+    label: "Obtenir la récompense"
+   },
+  {
+    title: "Bannière x2",
+    description: "2 bannières à récupérer",
+    link: "https://bit.ly/47j8tH6?r=qr",
+    label: "Obtenir la récompense"
+    },
+  {
+    title: "Emote x1",
+    description: "1 Emote à récupérer",
+    link: "https://link.clashroyale.com/?action=voucher&code=4e2bceb9-d231-4d54-a331-5b8d08005c86",
+    label: "Obtenir la récompense"
+   },
+  {
+    title: "Emote x1",
+    description: "1 Emote à récupérer",
+    link: "https://bit.ly/4dTNIFx?r=qr",
+    label: "Obtenir la récompense"
+   },
+  {
+    title: "Skin de tour x1 + Emote x1",
+    description: "1 skin de tour avec 1 emote à récupérer",
+    link: "https://store.supercell.com/clashroyale?boost=Tryaz ",
+    label: "Obtenir la récompense"
+   },
+  {
+    title: "Bannière x2",
+    description: "2 bannières à récupérer",
+    link: "https://supr.cl/4cZS8tA?r=qr",
+    label: "Obtenir la récompense"
+   },
+  {
+    title: "",
+    description: "",
+    link: "",
+    label: "Obtenir la récompense"
+  
+  ];
 
 /* Mets ici tes vrais réseaux quand tu les as. */
 const socials = {
