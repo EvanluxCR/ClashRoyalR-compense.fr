@@ -17,37 +17,37 @@ const rewards = [
     title: "Récompense #1",
     description: "Remplace ce texte par le nom et la description de ta récompense.",
     link: "https://example.com/recompense-1",
-    label: "Ouvrir la récompense"
+    label: "Obtenir la récompense"
   },
   {
     title: "Récompense #2",
     description: "Ajoute ici une autre récompense Clash Royale.",
     link: "https://example.com/recompense-2",
-    label: "Ouvrir la récompense"
+    label: "Obtenir la récompense"
   },
   {
     title: "Récompense #3",
     description: "Le QR code est généré automatiquement à partir du lien.",
     link: "https://example.com/recompense-3",
-    label: "Ouvrir la récompense"
+    label: "Obtenir la récompense"
   },
   {
     title: "Récompense #4",
     description: "Tu peux avoir autant de cartes que tu veux.",
     link: "https://example.com/recompense-4",
-    label: "Ouvrir la récompense"
+    label: "Obtenir la récompense"
   },
   {
     title: "Récompense #5",
     description: "Pense à remplacer le lien avant de publier la récompense.",
     link: "https://example.com/recompense-5",
-    label: "Ouvrir la récompense"
+    label: "Obtenir la récompense"
   },
   {
     title: "Récompense #6",
     description: "Reviens régulièrement pour ajouter les nouvelles récompenses.",
     link: "https://example.com/recompense-6",
-    label: "Ouvrir la récompense"
+    label: "Obtenir la récompense"
   }
 ];
 
