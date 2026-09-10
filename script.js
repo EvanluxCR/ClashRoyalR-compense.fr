@@ -99,9 +99,9 @@ const rewards = [
   },
  
   {
-    title: "",
-    description: "",
-    link: "",
+    title: "#",
+    description: "#",
+    link: "#",
     label: "Obtenir la récompense"
   }
  
