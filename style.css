@@ -176,6 +176,63 @@ a{color:inherit;text-decoration:none}
   margin-top:4px;
 }
 
+.profile-subsection{margin-top:28px}
+.profile-subtitle{
+  font-size:.95rem;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:#bfe4ff;
+  margin:0 0 14px;
+}
+.fav-card{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  border:1px solid rgba(72,153,255,.18);
+  background:rgba(0,20,45,.5);
+  border-radius:14px;
+  padding:14px 18px;
+  width:fit-content;
+}
+.fav-card img{width:56px;height:auto;border-radius:8px}
+.fav-card .fav-card__name{font-weight:900;font-size:1.05rem}
+.fav-card .fav-card__meta{color:var(--muted);font-size:.82rem;margin-top:2px}
+.deck-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:12px;
+}
+.deck-card{
+  border:1px solid rgba(72,153,255,.18);
+  background:rgba(0,20,45,.5);
+  border-radius:14px;
+  padding:10px;
+  text-align:center;
+}
+.deck-card img{width:100%;max-width:70px;border-radius:8px}
+.deck-card .deck-card__name{
+  font-size:.72rem;
+  font-weight:800;
+  margin-top:6px;
+  line-height:1.2;
+}
+.deck-card .deck-card__level{
+  font-size:.68rem;
+  color:var(--muted);
+  margin-top:2px;
+}
+.deck-card .deck-card__elixir{
+  display:inline-block;
+  margin-top:6px;
+  background:rgba(180,0,255,.18);
+  border:1px solid rgba(200,120,255,.4);
+  color:#e6bbff;
+  font-weight:900;
+  font-size:.72rem;
+  border-radius:999px;
+  padding:1px 8px;
+}
+
 /* ===== LEADERBOARD ===== */
 .leaderboard-controls{
   display:flex;

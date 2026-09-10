@@ -13,7 +13,7 @@
 */
 
 // Remplace par l'URL EXACTE de ton site GitHub Pages (sans slash à la fin)
-const ALLOWED_ORIGIN = "https://TON-PSEUDO-GITHUB.github.io";
+const ALLOWED_ORIGIN = "https://evanluxcr.github.io";
 
 export default {
   async fetch(request, env) {
@@ -43,6 +43,7 @@ export default {
       // /leaderboard?country=global  ->  /v1/locations/global/rankings/players
       const country = url.searchParams.get("country") || "global";
       apiPath = `/v1/locations/${encodeURIComponent(country)}/rankings/players?limit=50`;
+      
     } else {
       return jsonResponse({ error: "Route inconnue" }, 404, corsHeaders);
     }
