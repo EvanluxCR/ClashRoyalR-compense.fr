@@ -41,77 +41,115 @@
           <div class="profile-head__meta" id="p-clan"></div>
         </div>
 
-        <div class="stat-grid" id="p-stats"></div>
-
-        <section class="profile-subsection">
-          <h3 class="profile-subtitle">🏅 Ranked / Path of Legend</h3>
-          <div class="stat-grid" id="p-pol"></div>
-        </section>
-
-        <section class="profile-subsection" id="p-progress-section">
-          <h3 class="profile-subtitle">🛣️ Progression des modes</h3>
-          <div class="progress-grid" id="p-progress"></div>
-        </section>
-
-        <section class="profile-subsection" id="p-favcard-section">
-          <h3 class="profile-subtitle">⭐ Carte favorite</h3>
-          <div class="fav-card" id="p-favcard"></div>
-        </section>
-
-        <section class="profile-subsection" id="p-deck-section">
-          <h3 class="profile-subtitle">🃏 Deck actuel</h3>
-          <div class="deck-grid" id="p-deck"></div>
-          <div id="p-support-deck-wrap" class="sub-block">
-            <h4>🏰 Troupe de tour / Support du deck</h4>
-            <div class="deck-grid" id="p-support-deck"></div>
+        <details class="profile-collapse" id="p-stats-section">
+          <summary><span>📊 Statistiques complètes</span><span class="collapse-hint">Voir les stats</span></summary>
+          <div class="collapse-content">
+            <div class="stat-grid" id="p-stats"></div>
           </div>
-        </section>
+        </details>
 
-        <section class="profile-subsection" id="p-battles-section">
-          <div class="section-row">
-            <h3 class="profile-subtitle">⚔️ 25 combats récents & decks joués</h3>
-            <span class="mini-note" id="p-battle-summary"></span>
+        <details class="profile-collapse" id="p-pol-section">
+          <summary><span>🏅 Ranked / Path of Legend</span><span class="collapse-hint">Ligue, rating, rang</span></summary>
+          <div class="collapse-content">
+            <div class="stat-grid" id="p-pol"></div>
           </div>
-          <div class="battle-list" id="p-battles"></div>
-        </section>
+        </details>
 
-        <section class="profile-subsection" id="p-chests-section">
-          <h3 class="profile-subtitle">📦 Coffres à venir</h3>
-          <div class="chest-list" id="p-chests"></div>
-        </section>
+        <details class="profile-collapse" id="p-progress-section">
+          <summary><span>🛣️ Progression des modes</span><span class="collapse-hint">Voir les progressions</span></summary>
+          <div class="collapse-content">
+            <div class="progress-grid" id="p-progress"></div>
+          </div>
+        </details>
 
-        <section class="profile-subsection" id="p-cards-section">
-          <div class="section-row section-row--wrap">
-            <div>
-              <h3 class="profile-subtitle">🗂️ Collection complète de cartes</h3>
-              <div class="mini-note" id="p-card-summary"></div>
+        <details class="profile-collapse" id="p-favcard-section">
+          <summary><span>⭐ Carte favorite</span><span class="collapse-hint">Afficher</span></summary>
+          <div class="collapse-content">
+            <div class="fav-card" id="p-favcard"></div>
+          </div>
+        </details>
+
+        <details class="profile-collapse" id="p-deck-section">
+          <summary><span>🃏 Decks du joueur</span><span class="collapse-hint">Deck actuel + Best deck récent</span></summary>
+          <div class="collapse-content">
+            <div id="p-current-deck-wrap">
+              <h4 class="collapse-subtitle">🃏 Deck actuel</h4>
+              <div class="deck-grid" id="p-deck"></div>
+              <div id="p-support-deck-wrap" class="sub-block">
+                <h4>🏰 Troupe de tour / Support du deck</h4>
+                <div class="deck-grid" id="p-support-deck"></div>
+              </div>
             </div>
-            <input class="collection-search" id="card-filter" type="search" placeholder="Filtrer une carte...">
+
+            <div id="p-best-deck-wrap" class="sub-block best-deck-block">
+              <div class="section-row section-row--wrap">
+                <h4 class="collapse-subtitle">🔥 Best deck récent</h4>
+                <span class="mini-note" id="p-best-deck-meta"></span>
+              </div>
+              <p class="mini-note">Calculé uniquement à partir des combats récents disponibles dans l’API.</p>
+              <div class="deck-grid" id="p-best-deck"></div>
+            </div>
           </div>
-          <div class="collection-grid" id="p-cards"></div>
-        </section>
+        </details>
 
-        <section class="profile-subsection" id="p-support-cards-section">
-          <h3 class="profile-subtitle">🏰 Cartes de support / troupes de tour</h3>
-          <div class="collection-grid" id="p-support-cards"></div>
-        </section>
+        <details class="profile-collapse" id="p-battles-section">
+          <summary>
+            <span>⚔️ Combats récemment joués</span>
+            <span class="collapse-hint" id="p-battle-summary"></span>
+          </summary>
+          <div class="collapse-content">
+            <div class="battle-list" id="p-battles"></div>
+          </div>
+        </details>
 
-        <section class="profile-subsection" id="p-badges-section">
-          <h3 class="profile-subtitle">🎖️ Badges</h3>
-          <div class="detail-grid" id="p-badges"></div>
-        </section>
+        <details class="profile-collapse" id="p-chests-section">
+          <summary><span>📦 Coffres à venir</span><span class="collapse-hint">Afficher</span></summary>
+          <div class="collapse-content">
+            <div class="chest-list" id="p-chests"></div>
+          </div>
+        </details>
 
-        <section class="profile-subsection" id="p-achievements-section">
-          <h3 class="profile-subtitle">🏆 Succès / achievements</h3>
-          <div class="detail-grid" id="p-achievements"></div>
-        </section>
+        <details class="profile-collapse" id="p-cards-section">
+          <summary>
+            <span>🗂️ Collection complète de cartes</span>
+            <span class="collapse-hint" id="p-card-summary"></span>
+          </summary>
+          <div class="collapse-content">
+            <div class="section-row section-row--wrap collection-toolbar">
+              <span class="mini-note">Niveaux, quantités, raretés, évolutions et héros.</span>
+              <input class="collection-search" id="card-filter" type="search" placeholder="Filtrer une carte...">
+            </div>
+            <div class="collection-grid" id="p-cards"></div>
+          </div>
+        </details>
 
-        <section class="profile-subsection">
-          <details class="raw-details">
-            <summary>🧪 Données API brutes (pour voir absolument tous les champs)</summary>
+        <details class="profile-collapse" id="p-support-cards-section">
+          <summary><span>🏰 Cartes de support / troupes de tour</span><span class="collapse-hint">Afficher</span></summary>
+          <div class="collapse-content">
+            <div class="collection-grid" id="p-support-cards"></div>
+          </div>
+        </details>
+
+        <details class="profile-collapse" id="p-badges-section">
+          <summary><span>🎖️ Badges</span><span class="collapse-hint">Afficher</span></summary>
+          <div class="collapse-content">
+            <div class="detail-grid" id="p-badges"></div>
+          </div>
+        </details>
+
+        <details class="profile-collapse" id="p-achievements-section">
+          <summary><span>🏆 Succès / achievements</span><span class="collapse-hint">Afficher</span></summary>
+          <div class="collapse-content">
+            <div class="detail-grid" id="p-achievements"></div>
+          </div>
+        </details>
+
+        <details class="profile-collapse raw-details">
+          <summary><span>🧪 Données API brutes</span><span class="collapse-hint">Tous les champs</span></summary>
+          <div class="collapse-content">
             <pre id="p-raw"></pre>
-          </details>
-        </section>
+          </div>
+        </details>
       </article>
 
       <div class="setup-note">

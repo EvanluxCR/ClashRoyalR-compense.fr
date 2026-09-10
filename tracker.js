@@ -49,7 +49,9 @@ function renderFullPlayer(payload) {
   renderPathOfLegend(player);
   renderProgress(player.progress);
   renderFavouriteCard(player.currentFavouriteCard);
-  renderDeck(player.currentDeck, player.currentDeckSupportCards);
+  const hasCurrentDeck = renderDeck(player.currentDeck, player.currentDeckSupportCards);
+  const hasBestDeck = renderBestRecentDeck(payload.battles || [], player.tag);
+  document.querySelector("#p-deck-section").style.display = hasCurrentDeck || hasBestDeck ? "block" : "none";
   renderBattles(payload.battles || [], player.tag);
   renderChests(payload.upcomingChests || []);
 
@@ -60,6 +62,7 @@ function renderFullPlayer(payload) {
   renderAchievements(player.achievements || []);
 
   document.querySelector("#p-raw").textContent = JSON.stringify(payload, null, 2);
+  document.querySelectorAll(".profile-collapse").forEach(details => { details.open = false; });
   card.classList.add("is-visible");
 }
 
@@ -163,16 +166,18 @@ function renderFavouriteCard(fav) {
 }
 
 function renderDeck(deck, supportDeck) {
-  const section = document.querySelector("#p-deck-section");
+  const currentWrap = document.querySelector("#p-current-deck-wrap");
   const el = document.querySelector("#p-deck");
   const supportWrap = document.querySelector("#p-support-deck-wrap");
   const supportEl = document.querySelector("#p-support-deck");
 
   if (!deck?.length) {
-    section.style.display = "none";
-    return;
+    currentWrap.style.display = "none";
+    el.innerHTML = "";
+    return false;
   }
-  section.style.display = "block";
+
+  currentWrap.style.display = "block";
   el.innerHTML = deck.map(deckCard).join("");
 
   if (supportDeck?.length) {
@@ -180,7 +185,72 @@ function renderDeck(deck, supportDeck) {
     supportEl.innerHTML = supportDeck.map(deckCard).join("");
   } else {
     supportWrap.style.display = "none";
+    supportEl.innerHTML = "";
   }
+  return true;
+}
+
+function renderBestRecentDeck(battles, playerTag) {
+  const wrap = document.querySelector("#p-best-deck-wrap");
+  const el = document.querySelector("#p-best-deck");
+  const meta = document.querySelector("#p-best-deck-meta");
+  const groups = new Map();
+  wrap.querySelectorAll(".best-deck-support").forEach(node => node.remove());
+
+  for (const battle of battles || []) {
+    const me = findPlayerSide(battle.team, playerTag) || battle.team?.[0];
+    const enemy = battle.opponent?.[0] || {};
+    if (!me?.cards?.length) continue;
+
+    const cardKey = me.cards
+      .map(c => String(c.id ?? c.name ?? ""))
+      .sort()
+      .join("|");
+    const supportKey = (me.supportCards || [])
+      .map(c => String(c.id ?? c.name ?? ""))
+      .sort()
+      .join("|");
+    const key = `${cardKey}::${supportKey}`;
+
+    if (!groups.has(key)) {
+      groups.set(key, {
+        cards: me.cards,
+        supportCards: me.supportCards || [],
+        games: 0, wins: 0, losses: 0, draws: 0,
+      });
+    }
+
+    const g = groups.get(key);
+    g.games++;
+    const myCrowns = num(me.crowns);
+    const enemyCrowns = num(enemy.crowns);
+    if (myCrowns > enemyCrowns) g.wins++;
+    else if (myCrowns < enemyCrowns) g.losses++;
+    else g.draws++;
+  }
+
+  const ranked = [...groups.values()].sort((a, b) => {
+    const aRate = a.games ? a.wins / a.games : 0;
+    const bRate = b.games ? b.wins / b.games : 0;
+    return (b.wins - a.wins) || (bRate - aRate) || (b.games - a.games);
+  });
+
+  const best = ranked[0];
+  if (!best) {
+    wrap.style.display = "none";
+    el.innerHTML = "";
+    meta.textContent = "";
+    return false;
+  }
+
+  const winRate = best.games ? ((best.wins / best.games) * 100).toFixed(1) : "0.0";
+  meta.textContent = `${best.wins} V • ${best.losses} D${best.draws ? ` • ${best.draws} N` : ""} • ${winRate} % • ${best.games} partie${best.games > 1 ? "s" : ""}`;
+  el.innerHTML = best.cards.map(deckCard).join("");
+  if (best.supportCards.length) {
+    el.insertAdjacentHTML("afterend", `<div class="mini-note best-deck-support">🏰 Support : ${best.supportCards.map(c => escapeHtml(c.name || "—")).join(", ")}</div>`);
+  }
+  wrap.style.display = "block";
+  return true;
 }
 
 function renderBattles(battles, playerTag) {

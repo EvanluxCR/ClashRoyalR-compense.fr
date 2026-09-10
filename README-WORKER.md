@@ -43,3 +43,11 @@ https://TON-WORKER.workers.dev/leaderboard?country=global&mode=pathoflegend
 ```
 
 Un profil complet peut faire plusieurs appels API en parallèle. Évite de relancer la recherche en boucle pour ne pas gaspiller le quota API.
+
+
+## Mise à jour leaderboard
+
+- Ranked / Path of Legend : `/leaderboard?country=global&mode=pathoflegend&limit=200`
+- Trophy Road : `/leaderboard?country=global&mode=trophies&limit=200`
+- Le Worker peut agréger automatiquement plusieurs pages, jusqu’à 500 joueurs.
+- Trophy Road utilise `/leaderboards` puis `/leaderboard/{id}` afin de retrouver dynamiquement le leaderboard actuel au lieu de coder un ID en dur.

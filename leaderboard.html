@@ -32,14 +32,22 @@
           <option value="trophies">🏆 Trophy Road</option>
         </select>
 
-        <label for="region-select">Région :</label>
+        <label for="region-select" id="region-label">Région :</label>
         <select id="region-select">
           <option value="global">🌍 Mondial</option>
           <option value="57000087">🇫🇷 France</option>
           <option value="57000029">🇧🇪 Belgique</option>
-          <option value="57000226">🇨🇭 Suisse</option>
           <option value="57000047">🇨🇦 Canada</option>
         </select>
+
+        <label for="limit-select">Joueurs :</label>
+        <select id="limit-select">
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="200" selected>200</option>
+          <option value="500">500</option>
+        </select>
+
         <button id="refresh-btn" class="btn btn--secondary">🔄 Actualiser</button>
       </div>
 
@@ -53,7 +61,7 @@
       </div>
 
       <div class="setup-note">
-        Le Worker utilise maintenant <code>/locations/&lt;location&gt;/pathoflegend/players</code> pour Ranked, et conserve l’ancien classement Trophy Road en option.
+        Ranked utilise le classement Path of Legend actuel. Trophy Road utilise maintenant les nouveaux endpoints <code>/leaderboards</code> et <code>/leaderboard/ID</code>. En Trophy Road, le classement affiché est mondial.
       </div>
     </section>
   </main>

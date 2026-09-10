@@ -612,3 +612,61 @@ footer p{margin:4px}
   .battle-card__right{justify-content:flex-start;text-align:left}
   .collection-grid{grid-template-columns:1fr}
 }
+
+/* ===== TRACKER COMPACT : SECTIONS DEROULANTES ===== */
+.profile-collapse{
+  margin-top:14px;
+  border:1px solid rgba(72,153,255,.18);
+  background:rgba(0,20,45,.38);
+  border-radius:14px;
+  overflow:hidden;
+}
+.profile-collapse > summary{
+  list-style:none;
+  cursor:pointer;
+  user-select:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:54px;
+  padding:13px 48px 13px 15px;
+  position:relative;
+  font-weight:900;
+  color:#dff3ff;
+}
+.profile-collapse > summary::-webkit-details-marker{display:none}
+.profile-collapse > summary::after{
+  content:"▾";
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:1rem;
+  color:var(--cyan);
+  transition:transform .18s ease;
+}
+.profile-collapse[open] > summary::after{
+  transform:translateY(-50%) rotate(180deg);
+}
+.profile-collapse > summary:hover{background:rgba(32,132,220,.08)}
+.profile-collapse[open] > summary{border-bottom:1px solid rgba(72,153,255,.14)}
+.collapse-hint{
+  margin-left:auto;
+  color:var(--muted);
+  font-size:.76rem;
+  font-weight:700;
+  text-align:right;
+}
+.collapse-content{padding:15px}
+.collapse-subtitle{margin:0 0 12px;color:#bfe4ff;font-size:.92rem}
+.collection-toolbar{margin-bottom:4px}
+.best-deck-block{padding-top:16px;border-top:1px solid rgba(72,153,255,.14)}
+.best-deck-support{margin-top:9px}
+.profile-collapse.raw-details{padding:0}
+.profile-collapse.raw-details pre{margin:0;max-height:600px}
+.leaderboard-controls select:disabled{opacity:.5;cursor:not-allowed}
+
+@media(max-width:620px){
+  .profile-collapse > summary{align-items:flex-start;flex-direction:column;gap:4px;padding-right:44px}
+  .collapse-hint{margin-left:0;text-align:left}
+}
