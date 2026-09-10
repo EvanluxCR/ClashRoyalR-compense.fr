@@ -7,4 +7,4 @@
 
   Exemple : "https://cr-api-proxy.tonpseudo.workers.dev"
 */
-const API_BASE = "https://REMPLACE-MOI.workers.dev";
+const API_BASE = "https://cloudflare.leleuxevan.workers.dev";
