@@ -90,8 +90,8 @@ const rewards = [
     description: "",
     link: "",
     label: "Obtenir la récompense"
-  
-  ];
+   }
+ ];
 
 /* Mets ici tes vrais réseaux quand tu les as. */
 const socials = {
