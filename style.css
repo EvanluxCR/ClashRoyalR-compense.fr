@@ -789,3 +789,13 @@ footer p{margin:4px}
 .reward-code{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;padding:9px 11px;border-radius:10px;background:#061429;border:1px solid rgba(72,153,255,.18);font-size:.78rem}
 .reward-code span{color:#7890b2;font-weight:800}.reward-code strong{color:#d7e9ff;letter-spacing:.04em;overflow-wrap:anywhere}
 .reward-source-link{display:inline-block;margin-top:10px;color:#7890b2;font-size:.72rem;text-decoration:none}.reward-source-link:hover{color:#a8d3ff}
+
+/* V7 — stats de decks directement sur le site */
+.meta-stats-panel{margin-top:12px;padding:14px;border:1px solid rgba(72,153,255,.2);border-radius:14px;background:rgba(2,12,27,.72)}
+.meta-stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.meta-stats-grid>div{padding:10px 8px;text-align:center;border-radius:10px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055)}
+.meta-stats-grid strong{display:block;color:#eaf4ff;font-size:.95rem}.meta-stats-grid span{display:block;color:#7890b2;font-size:.65rem;margin-top:3px}
+.meta-stats-source{margin:12px 0 0;color:#7890b2;font-size:.69rem;line-height:1.55}
+.meta-toggle-arrow{display:inline-block;min-width:1em;text-align:center}
+.meta-estimate-note{flex-basis:100%;margin-top:8px;padding:9px 11px;border-radius:10px;background:rgba(255,190,73,.07);border:1px solid rgba(255,190,73,.18);color:#cdb783;font-size:.72rem;line-height:1.5}
+@media(max-width:620px){.meta-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

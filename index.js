@@ -5,7 +5,7 @@
   - Tracker joueur complet
   - Battle log / coffres / cartes
   - Leaderboard Ranked / Path of Legend uniquement
-  - Deck Meta automatique : arènes, Voie saisonnière, Ranked et Ultimate Champion
+  - Deck Meta automatique via API officielle : arènes, Voie saisonnière, Ranked et Ultimate Champion
 */
 
 const ALLOWED_ORIGINS = [
@@ -18,7 +18,6 @@ const API_ROOT = "https://proxy.royaleapi.dev/v1";
 const API_PAGE_SIZE = 100;
 const MAX_LEADERBOARD_ITEMS = 500;
 const MAX_LEADERBOARD_PAGES = 5;
-const META_SOURCE_ROOT = "https://royaleapi.com/decks/popular";
 const FREEBIES_SOURCE_URL = "https://royaleapi.com/free?lang=en";
 
 const ARENAS = [
@@ -468,117 +467,72 @@ async function handleMetaDecks(url, env, corsHeaders) {
   const sort = sanitizeChoice(url.searchParams.get("sort"), ["rating", "win", "pop"], "rating");
   const time = sanitizeChoice(url.searchParams.get("time"), ["1d", "3d", "7d"], "7d");
   const limit = clampInt(url.searchParams.get("limit"), 5, 30, 20);
+  const seedTag = normalizeTag(url.searchParams.get("seedTag") || "");
+
+  if (!env.CR_API_KEY) {
+    return jsonResponse(
+      { error: "Secret CR_API_KEY manquant dans Cloudflare Workers" },
+      500,
+      corsHeaders
+    );
+  }
 
   const arena = /^\d+$/.test(scopeParam)
     ? ARENAS.find(a => a.id === Number(scopeParam)) || null
     : null;
   const spec = getMetaScopeSpec(scopeParam, arena);
 
-  const royaleParams = new URLSearchParams({
-    lang: "fr",
-    players: "PvP",
-    size: String(limit),
-    sort,
-    time,
-    mode: "detail",
-    global_exclude: "false",
-    type: spec.royaleType,
-  });
-
-  if (spec.trophyRange) {
-    if (Number.isFinite(spec.trophyRange.min)) {
-      royaleParams.set("min_trophies", String(spec.trophyRange.min));
-    }
-    if (Number.isFinite(spec.trophyRange.max)) {
-      royaleParams.set("max_trophies", String(spec.trophyRange.max));
-    }
-  }
-
-  if (spec.rankedRange) {
-    if (Number.isFinite(spec.rankedRange.min)) {
-      royaleParams.set("min_ranked_trophies", String(spec.rankedRange.min));
-    }
-    if (Number.isFinite(spec.rankedRange.max)) {
-      royaleParams.set("max_ranked_trophies", String(spec.rankedRange.max));
-    }
-  }
-
-  const sourceUrl = `${META_SOURCE_ROOT}?${royaleParams.toString()}`;
-  let sourceWarning = "";
-
-  try {
-    const sourceRes = await fetch(sourceUrl, {
-      headers: {
-        Accept: "text/html,application/xhtml+xml",
-        "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.7",
-        "User-Agent": "Mozilla/5.0 (compatible; EVANLUX-ClashRoyale-Meta/2.0)",
-      },
-      cf: { cacheEverything: true, cacheTtl: 900 },
-    });
-
-    if (sourceRes.ok) {
-      const html = await sourceRes.text();
-      const decks = parseRoyaleApiDecks(html, limit);
-      if (decks.length) {
-        return jsonResponse(
-          {
-            decks,
-            source: "royaleapi",
-            sourceUrl,
-            mode: spec.mode,
-            scope: scopeParam,
-            scopeLabel: spec.label,
-            arena,
-            trophyRange: spec.trophyRange,
-            rankedRange: spec.rankedRange,
-            sort,
-            time,
-            fetchedAt: new Date().toISOString(),
-          },
-          200,
-          { ...corsHeaders, "Cache-Control": "public, max-age=900" }
-        );
-      }
-      sourceWarning = "La page meta a répondu, mais aucun deck n'a pu être extrait.";
-    } else {
-      sourceWarning = `Source meta HTTP ${sourceRes.status}`;
-    }
-  } catch (err) {
-    sourceWarning = `Source meta indisponible: ${err?.message || String(err)}`;
-  }
-
-  // Le secours par battle logs est pertinent uniquement pour le Classé,
-  // car l'API officielle ne permet pas d'énumérer proprement tous les joueurs
-  // d'une arène Trophy Road / saisonnière.
-  if (!env.CR_API_KEY || !spec.allowRankedFallback) {
-    return jsonResponse(
-      { error: "Source meta indisponible", detail: sourceWarning },
-      502,
-      corsHeaders
-    );
-  }
-
-  const fallback = await buildMetaFromRankedBattles(env, {
-    arena: null,
+  // Depuis juillet 2026, RoyaleAPI bloque explicitement le scraping automatisé
+  // avec un challenge Cloudflare (HTTP 403). On ne scrape donc plus RoyaleAPI ici.
+  // Les statistiques ci-dessous sont calculées directement à partir des battle logs
+  // fournis par l'API officielle Clash Royale.
+  let result = await buildMetaFromOfficialBattles(env, {
+    spec,
+    arena,
     sort,
     limit,
-    rankedRange: spec.rankedRange,
+    time,
+    seedTag,
   });
 
-  if (!fallback.decks.length) {
+  let estimated = false;
+  let estimateReason = "";
+
+  // Pour les petites arènes, l'API officielle ne fournit pas un annuaire mondial des
+  // joueurs par tranche de trophées. Si aucun combat exact n'est trouvé, on renvoie
+  // tout de même une meta récente calculée sur l'échantillon officiel disponible,
+  // clairement marquée comme estimation au lieu d'afficher une erreur HTTP 403.
+  if (!result.decks.length && spec.mode !== "ranked" && spec.mode !== "ultimate-champion") {
+    const fallbackSpec = getMetaScopeSpec("ranked", null);
+    result = await buildMetaFromOfficialBattles(env, {
+      spec: fallbackSpec,
+      arena: null,
+      sort,
+      limit,
+      time,
+      seedTag,
+    });
+    estimated = true;
+    estimateReason = seedTag
+      ? "Pas assez de combats récents trouvés dans cette tranche de trophées ; estimation basée sur l'échantillon officiel récent disponible."
+      : "L'API officielle ne permet pas de lister tous les joueurs par arène ; estimation basée sur un échantillon récent. Entre ton tag pour améliorer la précision autour de ton niveau.";
+  }
+
+  if (!result.decks.length) {
     return jsonResponse(
-      { error: "Impossible de calculer les decks meta", detail: sourceWarning },
-      502,
+      {
+        error: "Pas assez de combats récents pour calculer cette meta",
+        detail: "Réessaie dans quelques minutes ou entre ton tag joueur puis clique sur Adapter.",
+      },
+      404,
       corsHeaders
     );
   }
 
   return jsonResponse(
     {
-      decks: fallback.decks,
-      source: "ranked-battle-sample",
-      sourceUrl,
-      sourceWarning,
+      decks: result.decks,
+      source: "official-api-sample",
       mode: spec.mode,
       scope: scopeParam,
       scopeLabel: spec.label,
@@ -587,8 +541,11 @@ async function handleMetaDecks(url, env, corsHeaders) {
       rankedRange: spec.rankedRange,
       sort,
       time,
-      sampledPlayers: fallback.sampledPlayers,
-      sampledBattles: fallback.sampledBattles,
+      sampledPlayers: result.sampledPlayers,
+      sampledBattles: result.sampledBattles,
+      matchingBattles: result.matchingBattles,
+      estimated,
+      estimateReason,
       fetchedAt: new Date().toISOString(),
     },
     200,
@@ -777,56 +734,95 @@ function extractMetaStats(text) {
   };
 }
 
-async function buildMetaFromRankedBattles(env, { arena, sort, limit, rankedRange = null }) {
+async function buildMetaFromOfficialBattles(env, { spec, arena, sort, limit, time, seedTag = "" }) {
+  const maxPlayers = 28;
+  const seedTags = [];
+  const addSeed = (tag) => {
+    const normalized = normalizeTag(tag || "");
+    if (normalized && !seedTags.includes(normalized)) seedTags.push(normalized);
+  };
+
+  addSeed(seedTag);
+
   const ranking = await apiFetch(env, "/locations/global/pathoflegend/players?limit=14");
-  if (!ranking.ok || !Array.isArray(ranking.data?.items)) {
-    return { decks: [], sampledPlayers: 0, sampledBattles: 0 };
+  if (ranking.ok && Array.isArray(ranking.data?.items)) {
+    for (const player of ranking.data.items) addSeed(player?.tag);
   }
 
-  const players = ranking.data.items
-    .map(p => normalizeTag(p.tag))
-    .filter(Boolean)
-    .slice(0, 14);
+  if (!seedTags.length) {
+    return { decks: [], sampledPlayers: 0, sampledBattles: 0, matchingBattles: 0 };
+  }
 
-  const battleResponses = await Promise.all(
-    players.map(tag => apiFetch(env, `/players/%23${encodeURIComponent(tag)}/battlelog`))
+  const allTags = [...seedTags].slice(0, 14);
+  const responses = [];
+  const firstResponses = await Promise.all(
+    allTags.map(tag => apiFetch(env, `/players/%23${encodeURIComponent(tag)}/battlelog`))
   );
+  responses.push(...firstResponses);
+
+  // Une petite expansion BFS via les adversaires donne un échantillon bien plus varié,
+  // sans dépendre d'un site tiers. C'est particulièrement utile quand un tag joueur est fourni.
+  const discovered = new Set(allTags);
+  const neighbors = [];
+  for (const response of firstResponses) {
+    if (!response.ok || !Array.isArray(response.data)) continue;
+    for (const battle of response.data) {
+      for (const side of [battle?.team, battle?.opponent]) {
+        if (!Array.isArray(side)) continue;
+        for (const participant of side) {
+          const tag = normalizeTag(participant?.tag || "");
+          if (!tag || discovered.has(tag)) continue;
+          discovered.add(tag);
+          neighbors.push(tag);
+          if (allTags.length + neighbors.length >= maxPlayers) break;
+        }
+        if (allTags.length + neighbors.length >= maxPlayers) break;
+      }
+      if (allTags.length + neighbors.length >= maxPlayers) break;
+    }
+    if (allTags.length + neighbors.length >= maxPlayers) break;
+  }
+
+  const secondTags = neighbors.slice(0, Math.max(0, maxPlayers - allTags.length));
+  if (secondTags.length) {
+    const secondResponses = await Promise.all(
+      secondTags.map(tag => apiFetch(env, `/players/%23${encodeURIComponent(tag)}/battlelog`))
+    );
+    responses.push(...secondResponses);
+    allTags.push(...secondTags);
+  }
 
   const seenBattles = new Set();
   const map = new Map();
   let sampledBattles = 0;
+  let matchingBattles = 0;
 
-  for (const response of battleResponses) {
+  const trophyFilter = spec?.trophyRange
+    ? { min: spec.trophyRange.min ?? 0, max: spec.trophyRange.max ?? Number.POSITIVE_INFINITY }
+    : arena
+      ? { min: arena.min, max: arena.max }
+      : null;
+
+  for (const response of responses) {
     if (!response.ok || !Array.isArray(response.data)) continue;
     for (const battle of response.data) {
+      if (!isBattleWithinWindow(battle, time)) continue;
       const battleKey = makeBattleKey(battle);
       if (seenBattles.has(battleKey)) continue;
       seenBattles.add(battleKey);
       sampledBattles++;
 
+      if (!battleMatchesMetaScope(battle, spec)) continue;
+      matchingBattles++;
+
       const teamCrowns = sumCrowns(battle.team);
       const opponentCrowns = sumCrowns(battle.opponent);
-      collectBattleSide(map, battle.team, teamCrowns, opponentCrowns, arena, rankedRange);
-      collectBattleSide(map, battle.opponent, opponentCrowns, teamCrowns, arena, rankedRange);
+      collectBattleSide(map, battle.team, teamCrowns, opponentCrowns, trophyFilter, spec?.rankedRange || null);
+      collectBattleSide(map, battle.opponent, opponentCrowns, teamCrowns, trophyFilter, spec?.rankedRange || null);
     }
   }
 
-  let rows = [...map.values()].filter(x => x.usage >= 2);
-  if (!rows.length && arena) {
-    // Si aucun joueur du petit échantillon Ranked n'est dans l'arène demandée,
-    // on garde un secours global au lieu d'afficher une page vide.
-    for (const response of battleResponses) {
-      if (!response.ok || !Array.isArray(response.data)) continue;
-      for (const battle of response.data) {
-        const teamCrowns = sumCrowns(battle.team);
-        const opponentCrowns = sumCrowns(battle.opponent);
-        collectBattleSide(map, battle.team, teamCrowns, opponentCrowns, null, rankedRange);
-        collectBattleSide(map, battle.opponent, opponentCrowns, teamCrowns, null, rankedRange);
-      }
-    }
-    rows = [...map.values()].filter(x => x.usage >= 2);
-  }
-
+  let rows = [...map.values()].filter(x => x.usage >= 1);
   for (const row of rows) {
     row.winRate = row.usage ? (row.wins / row.usage) * 100 : 0;
     row.drawRate = row.usage ? (row.draws / row.usage) * 100 : 0;
@@ -846,13 +842,47 @@ async function buildMetaFromRankedBattles(env, { arena, sort, limit, rankedRange
     cards: row.cards,
     rating: row.rating,
     usage: row.usage,
+    wins: row.wins,
+    draws: row.draws,
+    losses: row.losses,
     winRate: round1(row.winRate),
     drawRate: round1(row.drawRate),
     lossRate: round1(row.lossRate),
-    royaleApiUrl: `${META_SOURCE_ROOT}?lang=fr&type=Ranked&time=7d`,
   }));
 
-  return { decks, sampledPlayers: players.length, sampledBattles };
+  return {
+    decks,
+    sampledPlayers: responses.filter(r => r.ok && Array.isArray(r.data)).length,
+    sampledBattles,
+    matchingBattles,
+  };
+}
+
+function battleMatchesMetaScope(battle, spec) {
+  const type = String(battle?.type || "").toLowerCase();
+  const mode = String(battle?.gameMode?.name || battle?.gameMode?.id || "").toLowerCase();
+  const ranked = type.includes("pathoflegend") || type.includes("ranked") || mode.includes("path of legend") || mode.includes("ranked") || Number(battle?.leagueNumber) > 0;
+
+  if (spec?.mode === "ranked" || spec?.mode === "ultimate-champion") return ranked;
+  if (ranked) return false;
+
+  // Les battle logs de Trophy Road sont généralement de type PvP/Ladder.
+  // On écarte explicitement les défis, guerres, tournois et amicaux.
+  const excluded = /(challenge|clan|war|tournament|friendly|boat|duel|draft|party|training)/i;
+  if (excluded.test(type) || excluded.test(mode)) return false;
+  return type === "pvp" || type.includes("ladder") || type.includes("trophy") || mode.includes("ladder") || mode.includes("trophy") || mode.includes("normal battle");
+}
+
+function isBattleWithinWindow(battle, time) {
+  const days = time === "1d" ? 1 : time === "3d" ? 3 : 7;
+  const raw = String(battle?.battleTime || "");
+  if (!raw) return true;
+  const m = raw.match(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(?:\.\d+)?Z$/);
+  if (!m) return true;
+  const iso = `${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}Z`;
+  const ts = Date.parse(iso);
+  if (!Number.isFinite(ts)) return true;
+  return ts >= Date.now() - days * 86400000;
 }
 
 function collectBattleSide(map, participants, ownCrowns, enemyCrowns, arena, rankedRange = null) {

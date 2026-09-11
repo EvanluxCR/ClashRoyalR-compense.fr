@@ -128,6 +128,8 @@ async function loadMeta() {
       time: timeSelect.value,
       limit: limitSelect.value,
     });
+    const seedTag = normalizePlayerTag(playerTagInput?.value || localStorage.getItem("evanlux:lastPlayerTag") || "");
+    if (seedTag) params.set("seedTag", seedTag);
 
     const res = await fetch(`${API_BASE}/meta-decks?${params.toString()}`);
     const data = await res.json();
@@ -137,12 +139,15 @@ async function loadMeta() {
     if (!decks.length) throw new Error("Aucun deck meta trouvé pour ce filtre.");
 
     renderContext(data);
-    gridEl.innerHTML = decks.map((deck, index) => renderMetaDeck(deck, index)).join("");
+    gridEl.innerHTML = decks.map((deck, index) => renderMetaDeck(deck, index, data)).join("");
     bindImageFallbacks();
+    bindStatsToggles();
 
-    stateEl.className = "state-msg state-msg--success";
-    const sourceLabel = data.source === "royaleapi" ? "meta publique actualisée" : "échantillon Ranked récent";
-    stateEl.textContent = `✅ ${decks.length} decks chargés — ${sourceLabel}.`;
+    stateEl.className = data.estimated ? "state-msg" : "state-msg state-msg--success";
+    const sampleText = data.sampledBattles != null ? ` • ${formatNumber(data.sampledBattles)} combats analysés` : "";
+    stateEl.textContent = data.estimated
+      ? `ℹ️ ${decks.length} decks affichés — estimation sur données officielles${sampleText}.`
+      : `✅ ${decks.length} decks chargés — API officielle Clash Royale${sampleText}.`;
   } catch (err) {
     contextEl.innerHTML = "";
     stateEl.className = "state-msg state-msg--error";
@@ -166,20 +171,30 @@ function renderContext(data) {
   if (data.rankedRange) chips.push(`📈 Rating ${formatRange(data.rankedRange.min, data.rankedRange.max)}`);
   chips.push(`🕒 ${timeLabel(data.time)}`);
   chips.push(`📊 ${sortLabel(data.sort)}`);
+  if (data.matchingBattles != null) chips.push(`🎯 ${formatNumber(data.matchingBattles)} combats correspondants`);
+  if (data.estimated) chips.push("ℹ️ Estimation");
   if (data.fetchedAt) chips.push(`🔄 ${formatDateTime(data.fetchedAt)}`);
 
   contextEl.innerHTML = chips.map(x => `<span class="meta-chip">${escapeHtml(x)}</span>`).join("");
+  if (data.estimated && data.estimateReason) {
+    contextEl.insertAdjacentHTML("beforeend", `<div class="meta-estimate-note">${escapeHtml(data.estimateReason)}</div>`);
+  }
 }
 
-function renderMetaDeck(deck, index) {
+function renderMetaDeck(deck, index, data = {}) {
   const cards = Array.isArray(deck.cards) ? deck.cards : [];
   const deckName = deck.name || inferDeckName(cards) || `Deck #${index + 1}`;
   const rating = numberOrNull(deck.rating);
   const winRate = numberOrNull(deck.winRate);
   const usage = numberOrNull(deck.usage);
+  const wins = numberOrNull(deck.wins);
+  const draws = numberOrNull(deck.draws);
+  const losses = numberOrNull(deck.losses);
+  const lossRate = numberOrNull(deck.lossRate);
+  const drawRate = numberOrNull(deck.drawRate);
   const avgElixir = calculateAverageElixir(cards);
-  const royaleUrl = deck.royaleApiUrl || "https://royaleapi.com/decks/popular";
   const gameLink = buildGameDeckLink(cards);
+  const statsId = `deck-stats-${index}`;
 
   return `
     <article class="meta-deck-card">
@@ -202,9 +217,39 @@ function renderMetaDeck(deck, index) {
 
       <div class="meta-deck-actions">
         ${gameLink ? `<a class="btn btn--primary meta-small-btn" href="${escapeAttr(gameLink)}">🎮 Ouvrir dans Clash Royale</a>` : ""}
-        <a class="btn btn--secondary meta-small-btn" href="${escapeAttr(royaleUrl)}" target="_blank" rel="noopener noreferrer">📊 Voir les stats</a>
+        <button class="btn btn--secondary meta-small-btn meta-stats-toggle" type="button" aria-expanded="false" aria-controls="${statsId}">📊 Voir les stats <span class="meta-toggle-arrow">▾</span></button>
+      </div>
+
+      <div id="${statsId}" class="meta-stats-panel" hidden>
+        <div class="meta-stats-grid">
+          <div><strong>${usage != null ? formatNumber(usage) : "—"}</strong><span>Parties</span></div>
+          <div><strong>${wins != null ? formatNumber(wins) : "—"}</strong><span>Victoires</span></div>
+          <div><strong>${losses != null ? formatNumber(losses) : "—"}</strong><span>Défaites</span></div>
+          <div><strong>${draws != null ? formatNumber(draws) : "—"}</strong><span>Égalités</span></div>
+          <div><strong>${winRate != null ? formatPercent(winRate) : "—"}</strong><span>Win rate</span></div>
+          <div><strong>${lossRate != null ? formatPercent(lossRate) : "—"}</strong><span>Loss rate</span></div>
+          <div><strong>${drawRate != null ? formatPercent(drawRate) : "—"}</strong><span>Draw rate</span></div>
+          <div><strong>${rating != null ? formatNumber(rating) : "—"}</strong><span>Note</span></div>
+        </div>
+        <p class="meta-stats-source">Statistiques calculées directement sur les combats récents disponibles via l’API officielle Clash Royale${data.estimated ? " (estimation pour cette tranche)" : ""}. Échantillon : ${formatNumber(data.sampledPlayers || 0)} joueurs / ${formatNumber(data.sampledBattles || 0)} combats analysés.</p>
       </div>
     </article>`;
+}
+
+function bindStatsToggles() {
+  document.querySelectorAll(".meta-stats-toggle").forEach(button => {
+    button.addEventListener("click", () => {
+      const id = button.getAttribute("aria-controls");
+      const panel = id ? document.getElementById(id) : null;
+      if (!panel) return;
+      const open = button.getAttribute("aria-expanded") === "true";
+      button.setAttribute("aria-expanded", String(!open));
+      panel.hidden = open;
+      const arrow = button.querySelector(".meta-toggle-arrow");
+      if (arrow) arrow.textContent = open ? "▾" : "▴";
+      button.firstChild.textContent = open ? "📊 Voir les stats " : "📊 Masquer les stats ";
+    });
+  });
 }
 
 function renderMetaCard(card) {
