@@ -11,6 +11,33 @@ const stateEl = document.querySelector("#meta-state");
 const gridEl = document.querySelector("#meta-grid");
 const contextEl = document.querySelector("#meta-context");
 
+async function fetchJson(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 18000);
+  try {
+    const res = await fetch(url, {
+      ...options,
+      cache: "no-store",
+      headers: { Accept: "application/json", ...(options.headers || {}) },
+      signal: controller.signal,
+    });
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; }
+    catch { data = { detail: text }; }
+    if (!res.ok) throw new Error(data?.detail || data?.error || `Erreur HTTP ${res.status}`);
+    return data;
+  } catch (error) {
+    if (error?.name === "AbortError") throw new Error("Le serveur met trop de temps à répondre. Réessaie.");
+    if (/Failed to fetch/i.test(String(error?.message || error))) {
+      throw new Error("Connexion au serveur impossible. Vérifie que le Worker V8 est bien déployé puis recharge la page.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 const ARENAS = [
   { id: 1, min: 0, max: 300, name: "Goblin Stadium" },
   { id: 2, min: 300, max: 600, name: "Bone Pit" },
@@ -101,8 +128,7 @@ function initArenaSelect() {
 async function ensureCardCatalog() {
   if (cardsCatalog.length) return;
   try {
-    const res = await fetch(`${API_BASE}/cards`);
-    const data = await res.json();
+    const data = await fetchJson(`${API_BASE}/cards?v=8`);
     cardsCatalog = Array.isArray(data?.items) ? data.items : [];
     cardBySlug = new Map();
     for (const card of cardsCatalog) {
@@ -131,9 +157,8 @@ async function loadMeta() {
     const seedTag = normalizePlayerTag(playerTagInput?.value || localStorage.getItem("evanlux:lastPlayerTag") || "");
     if (seedTag) params.set("seedTag", seedTag);
 
-    const res = await fetch(`${API_BASE}/meta-decks?${params.toString()}`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data?.detail || data?.error || `Erreur HTTP ${res.status}`);
+    params.set("v", "8");
+    const data = await fetchJson(`${API_BASE}/meta-decks?${params.toString()}`);
 
     const decks = Array.isArray(data?.decks) ? data.decks : [];
     if (!decks.length) throw new Error("Aucun deck meta trouvé pour ce filtre.");
@@ -258,7 +283,7 @@ function renderMetaCard(card) {
   const catalogCard = cardBySlug.get(baseSlug);
   const name = catalogCard?.name || prettySlug(baseSlug || rawSlug);
   const officialImg = catalogCard?.iconUrls?.medium;
-  const royaleImg = rawSlug ? `https://cdn.royaleapi.com/static/img/cards-150/${encodeURIComponent(rawSlug)}.png` : "";
+  const royaleImg = rawSlug ? `https://raw.githubusercontent.com/RoyaleAPI/cr-api-assets/master/cards/150/${encodeURIComponent(rawSlug)}.png` : "";
   const image = officialImg || royaleImg || FALLBACK_IMAGE;
   const variant = /-ev\d+$/i.test(rawSlug) ? "⚡ Évolution" : /-hero$/i.test(rawSlug) ? "🦸 Héros" : "";
 
@@ -274,7 +299,7 @@ function bindImageFallbacks() {
     img.addEventListener("error", () => {
       if (img.dataset.triedBase !== "1" && img.dataset.baseSlug) {
         img.dataset.triedBase = "1";
-        img.src = `https://cdn.royaleapi.com/static/img/cards-150/${encodeURIComponent(img.dataset.baseSlug)}.png`;
+        img.src = `https://raw.githubusercontent.com/RoyaleAPI/cr-api-assets/master/cards/150/${encodeURIComponent(img.dataset.baseSlug)}.png`;
       } else {
         img.onerror = null;
         img.src = FALLBACK_IMAGE;
@@ -343,9 +368,7 @@ async function detectFromPlayer() {
   stateEl.textContent = "Analyse du niveau du joueur...";
 
   try {
-    const res = await fetch(`${API_BASE}/player/${encodeURIComponent(tag)}`);
-    const player = await res.json();
-    if (!res.ok) throw new Error(player?.detail || player?.error || `Erreur HTTP ${res.status}`);
+    const player = await fetchJson(`${API_BASE}/player/${encodeURIComponent(tag)}?v=8`);
 
     try { localStorage.setItem("evanlux:lastPlayerTag", tag); } catch {}
 
