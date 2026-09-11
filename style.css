@@ -670,3 +670,122 @@ footer p{margin:4px}
   .profile-collapse > summary{align-items:flex-start;flex-direction:column;gap:4px;padding-right:44px}
   .collapse-hint{margin-left:0;text-align:left}
 }
+
+/* ===== DECK META AUTOMATIQUE ===== */
+.meta-controls{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(145px,1fr));
+  gap:12px;
+  align-items:end;
+  margin:28px 0 12px;
+}
+.meta-control{display:flex;flex-direction:column;gap:7px;min-width:0}
+.meta-control--trophies{grid-column:span 2}
+.meta-control label{color:var(--muted);font-size:.78rem;font-weight:900}
+.meta-control select,.meta-control input{
+  width:100%;
+  min-height:46px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:rgba(6,16,34,.9);
+  color:var(--white);
+  padding:0 12px;
+  font:inherit;
+}
+.meta-control select:focus,.meta-control input:focus{outline:2px solid var(--blue)}
+.meta-inline{display:flex;gap:8px;min-width:0}
+.meta-inline input{min-width:0;flex:1}
+.meta-inline .btn{white-space:nowrap;border:none;cursor:pointer}
+.meta-refresh{min-height:46px;border:none;cursor:pointer}
+.meta-refresh:disabled{opacity:.55;cursor:wait}
+.meta-context{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 2px}
+.meta-chip{
+  display:inline-flex;
+  align-items:center;
+  border:1px solid rgba(72,153,255,.22);
+  background:rgba(0,48,88,.35);
+  color:#ccecff;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:.73rem;
+  font-weight:800;
+}
+.meta-deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.meta-deck-card{
+  border:1px solid rgba(72,153,255,.22);
+  background:linear-gradient(145deg,rgba(13,33,65,.82),rgba(4,13,29,.88));
+  border-radius:18px;
+  padding:16px;
+  box-shadow:0 14px 40px rgba(0,0,0,.24);
+}
+.meta-deck-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:13px}
+.meta-rank{
+  min-width:42px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(0,217,255,.28);
+  background:rgba(0,151,255,.12);
+  border-radius:10px;
+  color:var(--cyan);
+  font-weight:1000;
+}
+.meta-deck-title{min-width:0;flex:1}
+.meta-deck-title h3{margin:0;font-size:1rem;line-height:1.3;overflow-wrap:anywhere}
+.meta-deck-stats{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.meta-deck-stats span{
+  font-size:.68rem;
+  color:var(--muted);
+  background:rgba(255,255,255,.035);
+  border-radius:999px;
+  padding:3px 7px;
+}
+.meta-card-row{display:grid;grid-template-columns:repeat(8,minmax(38px,1fr));gap:5px}
+.meta-card{position:relative;min-width:0;text-align:center}
+.meta-card img{width:100%;height:auto;display:block;object-fit:contain;border-radius:7px}
+.meta-card span{
+  position:absolute;
+  right:1px;
+  bottom:1px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:20px;
+  height:20px;
+  border-radius:999px;
+  background:rgba(0,0,0,.82);
+  font-size:.7rem;
+}
+.meta-deck-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.meta-small-btn{padding:8px 11px;font-size:.75rem}
+.meta-source-note{color:#7890b2;font-size:.72rem;margin:22px 0 0}
+
+@media(max-width:980px){
+  .meta-controls{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .meta-control--trophies{grid-column:span 2}
+}
+@media(max-width:620px){
+  .meta-controls{grid-template-columns:1fr}
+  .meta-control--trophies{grid-column:span 1}
+  .meta-inline{flex-direction:column}
+  .meta-deck-grid{grid-template-columns:1fr}
+  .meta-card-row{grid-template-columns:repeat(4,minmax(45px,1fr));gap:7px}
+}
+
+
+/* V6 — Deck links + récompenses automatiques */
+.meta-game-note{margin-top:14px;padding:12px 14px;border:1px solid rgba(72,153,255,.2);border-radius:12px;background:rgba(72,153,255,.06);color:#a8bedc}
+.reward-auto-state{margin:0 0 18px;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);font-size:.86rem;color:#b9cce6}
+.reward-auto-state--ok{border-color:rgba(73,215,130,.28);background:rgba(73,215,130,.07);color:#a9f0c5}
+.reward-auto-state--warn{border-color:rgba(255,190,73,.3);background:rgba(255,190,73,.07);color:#ffd98a}
+.reward-card__topline{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.reward-status{padding:5px 9px;border-radius:999px;font-size:.68rem;font-weight:900;letter-spacing:.04em;border:1px solid transparent}
+.reward-status--active{color:#7ff0aa;background:rgba(73,215,130,.1);border-color:rgba(73,215,130,.3)}
+.reward-status--expired{color:#ff9aa9;background:rgba(255,91,117,.1);border-color:rgba(255,91,117,.3)}
+.reward-status--unknown{color:#ffd98a;background:rgba(255,190,73,.1);border-color:rgba(255,190,73,.3)}
+.reward-card--expired{opacity:.65}
+.reward-date{font-size:.78rem!important;color:#8fa7c6!important;margin:6px 0!important}
+.reward-code{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0;padding:9px 11px;border-radius:10px;background:#061429;border:1px solid rgba(72,153,255,.18);font-size:.78rem}
+.reward-code span{color:#7890b2;font-weight:800}.reward-code strong{color:#d7e9ff;letter-spacing:.04em;overflow-wrap:anywhere}
+.reward-source-link{display:inline-block;margin-top:10px;color:#7890b2;font-size:.72rem;text-decoration:none}.reward-source-link:hover{color:#a8d3ff}

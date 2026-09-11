@@ -41,6 +41,10 @@ cardFilter.addEventListener("input", () => renderCardCollection(renderedCards));
 
 function renderFullPlayer(payload) {
   const player = payload.player || {};
+  try {
+    const savedTag = String(player.tag || "").replace(/^#/, "");
+    if (savedTag) localStorage.setItem("evanlux:lastPlayerTag", savedTag);
+  } catch {}
   document.querySelector("#p-name").textContent = player.name || "—";
   document.querySelector("#p-tag").textContent = player.tag || "—";
   document.querySelector("#p-clan").innerHTML = renderClan(player);
@@ -81,9 +85,9 @@ function renderStats(player) {
   };
 
   const stats = [
-    ["Trophées Trophy Road", player.trophies],
-    ["Record Trophy Road", player.bestTrophies],
-    ["Ancien record Trophy Road", player.legacyTrophyRoadHighScore],
+    ["Trophées", player.trophies],
+    ["Record de trophées", player.bestTrophies],
+    ["Ancien record de trophées", player.legacyTrophyRoadHighScore],
     ["Arène", player.arena?.name],
     ["Niveau d'XP", player.expLevel],
     ["XP actuelle", player.expPoints],
@@ -461,7 +465,7 @@ function prettyProgressName(key, p) {
   if (key === "") return "Mode annexe";
   if (key.startsWith("2v2League_")) return `2v2 League ${key.slice(-6)}`;
   if (key.startsWith("AutoChess_")) return key.replaceAll("_", " ");
-  if (key.startsWith("seasonal-trophy-road-")) return `Trophy Road saisonnier ${key.split("-").pop()}`;
+  if (key.startsWith("seasonal-trophy-road-")) return `Voie saisonnière ${key.split("-").pop()}`;
   return p?.arena?.rawName || key;
 }
 

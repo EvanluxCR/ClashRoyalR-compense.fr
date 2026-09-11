@@ -35,7 +35,7 @@
     <div class="hero__content">
       <div class="pill">⚡ EVANLUX • CLASH ROYALE</div>
       <h1>Récompenses<br><span>Clash Royale</span></h1>
-      <p>Retrouve ici les récompenses disponibles, avec leur lien direct et leur QR code.</p>
+      <p>Retrouve ici les récompenses détectées automatiquement, avec leur statut, leur lien direct et leur QR code.</p>
       <a class="btn btn--primary" href="#recompenses">🎁 Voir les récompenses</a>
     </div>
   </header>
@@ -84,6 +84,7 @@
         <div class="live-badge"><i></i> <span id="last-updated">Mise à jour régulière</span></div>
       </div>
 
+      <div id="reward-auto-state" class="reward-auto-state">Vérification automatique en cours…</div>
       <div id="reward-grid" class="reward-grid"></div>
     </section>
 
@@ -109,6 +110,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <script src="config.js"></script>
   <script src="rewards.js"></script>
 </body>
 </html>

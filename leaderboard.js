@@ -3,46 +3,41 @@ const table = document.querySelector("#leaderboard-table");
 const thead = document.querySelector("#leaderboard-head");
 const tbody = document.querySelector("#leaderboard-body");
 const regionSelect = document.querySelector("#region-select");
-const modeSelect = document.querySelector("#mode-select");
 const limitSelect = document.querySelector("#limit-select");
 const refreshBtn = document.querySelector("#refresh-btn");
 
 async function loadLeaderboard() {
   table.style.display = "none";
   stateEl.className = "state-msg";
-  stateEl.textContent = "Chargement du classement...";
+  stateEl.textContent = "Chargement du classement Ranked...";
 
-  const mode = modeSelect.value;
   const requestedLimit = Number(limitSelect.value) || 200;
   const region = regionSelect.value;
 
   try {
-    const url = `${API_BASE}/leaderboard?country=${encodeURIComponent(region)}&mode=${encodeURIComponent(mode)}&limit=${requestedLimit}`;
+    const url = `${API_BASE}/leaderboard?country=${encodeURIComponent(region)}&limit=${requestedLimit}`;
     const res = await fetch(url);
     const data = await safeJson(res);
     if (!res.ok) throw new Error(data?.detail || data?.error || `Erreur HTTP ${res.status}`);
 
     const items = Array.isArray(data?.items) ? data.items : [];
-    if (!items.length) throw new Error("Le classement est vide pour ce mode.");
+    if (!items.length) throw new Error("Le classement Ranked est vide pour cette région.");
 
-    if (mode === "pathoflegend") renderPathLeaderboard(items);
-    else renderTrophyLeaderboard(items);
-
+    renderLeaderboard(items);
     table.style.display = "table";
     stateEl.className = "state-msg state-msg--success";
 
-    const modeName = mode === "pathoflegend" ? "Ranked / Path of Legend" : "Trophy Road";
     const exhaustedText = data?.exhausted && items.length < requestedLimit
       ? ` L’API ne renvoie actuellement que ${items.length} joueur${items.length > 1 ? "s" : ""} pour ce classement.`
       : "";
-    stateEl.textContent = `✅ ${items.length} joueurs chargés — ${modeName}.${exhaustedText}`;
+    stateEl.textContent = `✅ ${items.length} joueurs chargés — Ranked / Path of Legend.${exhaustedText}`;
   } catch (err) {
     stateEl.className = "state-msg state-msg--error";
     stateEl.textContent = `❌ ${err.message}`;
   }
 }
 
-function renderPathLeaderboard(items) {
+function renderLeaderboard(items) {
   thead.innerHTML = `<tr><th>#</th><th>Joueur</th><th>Tag</th><th>Clan</th><th>Ligue</th><th>Rating</th></tr>`;
   tbody.innerHTML = items.map(p => `
     <tr>
@@ -55,35 +50,9 @@ function renderPathLeaderboard(items) {
     </tr>`).join("");
 }
 
-function renderTrophyLeaderboard(items) {
-  thead.innerHTML = `<tr><th>#</th><th>Joueur</th><th>Tag</th><th>Clan</th><th>Trophées</th><th>Rang précédent</th></tr>`;
-  tbody.innerHTML = items.map(p => `
-    <tr>
-      <td class="rank">#${escapeHtml(p.rank ?? "—")}</td>
-      <td><a class="player-link" href="tracker.html?tag=${encodeURIComponent(String(p.tag || "").replace("#", ""))}">${escapeHtml(p.name || "—")}</a></td>
-      <td class="tag-cell">${escapeHtml(p.tag || "—")}</td>
-      <td>${escapeHtml(p.clan?.name || "—")}</td>
-      <td class="trophies">🏆 ${formatNumber(p.trophies)}</td>
-      <td>${p.previousRank != null ? `#${formatNumber(p.previousRank)}` : "—"}</td>
-    </tr>`).join("");
-}
-
-function syncModeControls() {
-  regionSelect.disabled = false;
-  regionSelect.title = modeSelect.value === "trophies"
-    ? "Choisis la région du classement Trophy Road."
-    : "Choisis la région du classement Ranked / Path of Legend.";
-}
-
 regionSelect.addEventListener("change", loadLeaderboard);
-modeSelect.addEventListener("change", () => {
-  syncModeControls();
-  loadLeaderboard();
-});
 limitSelect.addEventListener("change", loadLeaderboard);
 refreshBtn.addEventListener("click", loadLeaderboard);
-
-syncModeControls();
 loadLeaderboard();
 
 async function safeJson(res) {

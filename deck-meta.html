@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Meilleurs decks Clash Royale du moment — bientôt disponible.">
+  <meta name="description" content="Decks meta Clash Royale mis à jour automatiquement : meilleurs decks Ranked et par arène.">
   <title>EvANLUX • Deck Meta</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -22,17 +22,78 @@
   <main>
     <section class="section">
       <div class="section__eyebrow">🃏 DECK META</div>
-      <h2>Cette page arrive bientôt.</h2>
-      <p class="lead">
-        Tu pourras retrouver ici les meilleurs decks du moment, classés par archétype
-        (cycle, contrôle, beatdown...) et par arène. Reviens plus tard !
+      <h2>Les meilleurs decks selon ton mode et ton niveau.</h2>
+      <p class="lead">La page se met à jour automatiquement : arènes classiques, Voie des trophées saisonnière après 14 000 trophées, mode Classé et Champion suprême par tranche de rating.</p>
+
+      <div class="meta-controls">
+        <div class="meta-control">
+          <label for="arena-select">Mode / niveau</label>
+          <select id="arena-select"></select>
+        </div>
+
+        <div class="meta-control meta-control--trophies">
+          <label for="trophy-input">Mes trophées</label>
+          <div class="meta-inline">
+            <input id="trophy-input" type="number" min="0" max="25000" step="1" placeholder="Ex. 14750">
+            <button id="detect-arena-btn" class="btn btn--secondary" type="button">Détecter mon niveau</button>
+          </div>
+        </div>
+
+        <div class="meta-control meta-control--trophies">
+          <label for="meta-player-tag">Adapter automatiquement à mon compte</label>
+          <div class="meta-inline">
+            <input id="meta-player-tag" type="text" placeholder="#TAG du joueur" autocomplete="off" spellcheck="false">
+            <button id="detect-player-btn" class="btn btn--secondary" type="button">✨ Adapter</button>
+          </div>
+        </div>
+
+        <div class="meta-control">
+          <label for="sort-select">Trier par</label>
+          <select id="sort-select">
+            <option value="rating" selected>⭐ Meilleure note</option>
+            <option value="win">🔥 Taux de victoire</option>
+            <option value="pop">📈 Popularité</option>
+          </select>
+        </div>
+
+        <div class="meta-control">
+          <label for="time-select">Période</label>
+          <select id="time-select">
+            <option value="1d">24 heures</option>
+            <option value="3d">3 jours</option>
+            <option value="7d" selected>7 jours</option>
+          </select>
+        </div>
+
+        <div class="meta-control">
+          <label for="deck-limit-select">Decks</label>
+          <select id="deck-limit-select">
+            <option value="10">10</option>
+            <option value="20" selected>20</option>
+            <option value="30">30</option>
+          </select>
+        </div>
+
+        <button id="meta-refresh-btn" class="btn btn--primary meta-refresh" type="button">🔄 Actualiser</button>
+      </div>
+
+      <div id="meta-context" class="meta-context"></div>
+      <div id="meta-state" class="state-msg">Chargement des decks meta...</div>
+      <div id="meta-grid" class="meta-deck-grid"></div>
+
+      <p class="meta-source-note meta-game-note">🎮 Le bouton « Ouvrir dans Clash Royale » lance le lien officiel de deck. Le jeu ouvre le deck prêt à être importé ; Clash Royale te demande ensuite de choisir/confirmer l’emplacement de deck.</p>
+
+      <p class="meta-source-note">
+        Les filtres saisonniers utilisent les plages 14 000–14 499, 14 500–14 999 et 15 000+. Pour le Classé, la meta globale et Champion suprême sont séparées, avec des tranches de rating pour le haut niveau.
       </p>
-      <a class="btn btn--primary" href="index.html" style="margin-top:20px;display:inline-flex">⬅ Retour à l'accueil</a>
     </section>
   </main>
 
   <footer>
     <p>⚡ EVANLUX • Contenu Clash Royale non officiel, non affilié à Supercell.</p>
   </footer>
+
+  <script src="config.js"></script>
+  <script src="deck-meta.js"></script>
 </body>
 </html>
