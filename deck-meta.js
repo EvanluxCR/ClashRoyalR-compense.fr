@@ -128,7 +128,7 @@ function initArenaSelect() {
 async function ensureCardCatalog() {
   if (cardsCatalog.length) return;
   try {
-    const data = await fetchJson(`${API_BASE}/cards?v=8`);
+    const data = await fetchJson(`${API_BASE}/cards?v=9`);
     cardsCatalog = Array.isArray(data?.items) ? data.items : [];
     cardBySlug = new Map();
     for (const card of cardsCatalog) {
@@ -157,7 +157,7 @@ async function loadMeta() {
     const seedTag = normalizePlayerTag(playerTagInput?.value || localStorage.getItem("evanlux:lastPlayerTag") || "");
     if (seedTag) params.set("seedTag", seedTag);
 
-    params.set("v", "8");
+    params.set("v", "9");
     const data = await fetchJson(`${API_BASE}/meta-decks?${params.toString()}`);
 
     const decks = Array.isArray(data?.decks) ? data.decks : [];
@@ -169,10 +169,14 @@ async function loadMeta() {
     bindStatsToggles();
 
     stateEl.className = data.estimated ? "state-msg" : "state-msg state-msg--success";
-    const sampleText = data.sampledBattles != null ? ` • ${formatNumber(data.sampledBattles)} combats analysés` : "";
-    stateEl.textContent = data.estimated
-      ? `ℹ️ ${decks.length} decks affichés — estimation sur données officielles${sampleText}.`
-      : `✅ ${decks.length} decks chargés — API officielle Clash Royale${sampleText}.`;
+    const sampleText = data.sampledBattles ? ` • ${formatNumber(data.sampledBattles)} combats analysés` : "";
+    if (data.source === "deckshop-arena") {
+      stateEl.textContent = `✅ ${decks.length} decks adaptés à l’Arène ${data.arena?.id || ""} — uniquement avec des cartes disponibles à ce niveau.`;
+    } else {
+      stateEl.textContent = data.estimated
+        ? `ℹ️ ${decks.length} decks affichés — estimation filtrée pour cette arène${sampleText}.`
+        : `✅ ${decks.length} decks chargés — API officielle Clash Royale${sampleText}.`;
+    }
   } catch (err) {
     contextEl.innerHTML = "";
     stateEl.className = "state-msg state-msg--error";
@@ -256,7 +260,9 @@ function renderMetaDeck(deck, index, data = {}) {
           <div><strong>${drawRate != null ? formatPercent(drawRate) : "—"}</strong><span>Draw rate</span></div>
           <div><strong>${rating != null ? formatNumber(rating) : "—"}</strong><span>Note</span></div>
         </div>
-        <p class="meta-stats-source">Statistiques calculées directement sur les combats récents disponibles via l’API officielle Clash Royale${data.estimated ? " (estimation pour cette tranche)" : ""}. Échantillon : ${formatNumber(data.sampledPlayers || 0)} joueurs / ${formatNumber(data.sampledBattles || 0)} combats analysés.</p>
+        <p class="meta-stats-source">${data.source === "deckshop-arena"
+          ? "Deck sélectionné pour cette arène et filtré selon les cartes accessibles. Les statistiques de parties ne sont pas disponibles pour cette source."
+          : `Statistiques calculées directement sur les combats récents disponibles via l’API officielle Clash Royale${data.estimated ? " (estimation pour cette tranche)" : ""}. Échantillon : ${formatNumber(data.sampledPlayers || 0)} joueurs / ${formatNumber(data.sampledBattles || 0)} combats analysés.`}</p>
       </div>
     </article>`;
 }

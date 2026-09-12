@@ -57,8 +57,9 @@ async function initRewards() {
     renderRewards(FALLBACK_REWARDS.map(x => ({ ...x, status: "unknown", source: "fallback" })), "fallback");
     if (lastUpdatedEl) lastUpdatedEl.textContent = "Source automatique indisponible";
     if (autoStateEl) {
-      autoStateEl.className = "reward-auto-state reward-auto-state--warn";
-      autoStateEl.textContent = `⚠️ Vérification automatique indisponible : ${err.message}. Les anciennes récompenses de secours sont affichées comme « à vérifier ».`;
+      autoStateEl.className = "reward-auto-state";
+      autoStateEl.textContent = ""; 
+      autoStateEl.style.display = "none";
     }
   }
 }
@@ -68,7 +69,7 @@ function renderRewards(rewards, mode) {
   rewards.forEach((reward, index) => {
     const type = detectType(`${reward.title || ""} ${reward.description || ""}`);
     const status = reward.status || (mode === "auto" ? "active" : "unknown");
-    const statusLabel = status === "active" ? "✅ ACTIF" : status === "expired" ? "❌ EXPIRÉ" : "⚠️ À VÉRIFIER";
+    const statusLabel = status === "active" ? "✅ ACTIF" : status === "expired" ? "❌ EXPIRÉ" : "";
     const statusClass = status === "active" ? "active" : status === "expired" ? "expired" : "unknown";
     const link = safeUrl(reward.link || reward.sourceUrl || "#");
     const canOpen = link !== "#";

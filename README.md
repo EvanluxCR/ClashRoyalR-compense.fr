@@ -1,3 +1,7 @@
+# EVANLUX Clash Royale — V9
+
+V9 corrige Deck Meta par arène : les decks utilisent uniquement des cartes accessibles dans l’arène sélectionnée. Les pages d’arène essaient une source dédiée par arène, puis un fallback filtré strictement.
+
 # EVANLUX — Hub Clash Royale
 
 Site statique prêt pour GitHub Pages, avec plusieurs rubriques.
