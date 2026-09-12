@@ -16,7 +16,7 @@ form.addEventListener("submit", async (e) => {
 
   card.classList.remove("is-visible");
   stateEl.className = "state-msg";
-  stateEl.textContent = "Recherche du profil, des cartes, coffres et 25 combats récents...";
+  stateEl.textContent = "Chargement du profil…";
 
   try {
     const res = await fetch(`${API_BASE}/player/${encodeURIComponent(tag)}/full`);
@@ -30,8 +30,8 @@ form.addEventListener("submit", async (e) => {
     renderFullPlayer(payload);
     stateEl.className = "state-msg state-msg--success";
     stateEl.textContent = payload.warnings?.length
-      ? `Profil chargé avec avertissement : ${payload.warnings.join(", ")}`
-      : "✅ Profil complet chargé.";
+      ? `Profil chargé. Certaines données secondaires sont momentanément indisponibles.`
+      : "Profil chargé.";
   } catch (err) {
     showError(err.message || "Erreur inconnue");
   }
