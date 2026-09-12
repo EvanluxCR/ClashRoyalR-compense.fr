@@ -100,14 +100,6 @@ const rewards = [
     link: "https://supr.cl/4cZS8tA?r=qr",
     label: "Obtenir la récompense"
   }
-  
-  },
- 
-  {
-    title: "Bannière x2",
-    description: "2 bannières à récupérer",
-    link: "https://store.supercell.com/clashroyale?boost=Tryaz",
-    label: "Obtenir la récompense"
  
 ];
 
